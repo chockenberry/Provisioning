@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>13EE5D9E-F074-4F37-BEA2-988246354A84</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Provisioning</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>E4507351-02B0-4162-862B-226280B4BF4B</key>
+		<string>https://github.com/chockenberry/Provisioning.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Provisioning.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>E4507351-02B0-4162-862B-226280B4BF4B</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/chockenberry/Provisioning.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>E4507351-02B0-4162-862B-226280B4BF4B</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>E4507351-02B0-4162-862B-226280B4BF4B</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Provisioning</string>
+		</dict>
+	</array>
+</dict>
+</plist>

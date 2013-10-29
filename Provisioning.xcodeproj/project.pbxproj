@@ -48,7 +48,7 @@
 		44707D751820208F0005B2C6 /* Provisioning-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Provisioning-Prefix.pch"; sourceTree = "<group>"; };
 		44707D7B1820219E0005B2C6 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		44707D7D182021A90005B2C6 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		44707D81182026730005B2C6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		44707D8218202BEA0005B2C6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +71,7 @@
 		44707D531820208F0005B2C6 = {
 			isa = PBXGroup;
 			children = (
+				44707D8218202BEA0005B2C6 /* README.md */,
 				44707D691820208F0005B2C6 /* Provisioning */,
 				44707D601820208F0005B2C6 /* Frameworks */,
 				44707D5F1820208F0005B2C6 /* Products */,
@@ -115,7 +116,6 @@
 				44707D6B1820208F0005B2C6 /* Provisioning-Info.plist */,
 				44707D6C1820208F0005B2C6 /* InfoPlist.strings */,
 				44707D751820208F0005B2C6 /* Provisioning-Prefix.pch */,
-				44707D81182026730005B2C6 /* README.md */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -340,6 +340,7 @@
 				44707D7A1820208F0005B2C6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

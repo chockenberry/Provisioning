@@ -36,6 +36,12 @@ void displayKeyAndValue(NSUInteger level, NSString *key, id value, NSMutableStri
 	else if ([value isKindOfClass:[NSArray class]]) {
 		[output appendFormat:@"%*s%@ = [\n", indent, "", key];
 		NSArray *array = (NSArray *)value;
+
+		// special case for provisioned devices: sort them so it's easier to find matches visually
+		if ([key isEqualToString:@"ProvisionedDevices"]) {
+			array = [array sortedArrayUsingSelector:@selector(compare:)];
+		}
+
 		for (id value in array) {
 			displayKeyAndValue(level + 1, nil, value, output);
 		}

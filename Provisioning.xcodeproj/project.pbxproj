@@ -18,6 +18,7 @@
 		44707D7C1820219E0005B2C6 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44707D7B1820219E0005B2C6 /* AppKit.framework */; };
 		44707D7E182021A90005B2C6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44707D7D182021A90005B2C6 /* Security.framework */; };
 		44707D80182023760005B2C6 /* Provisioning.qlgenerator in Copy Plug-in to ~/Library/QuickLook */ = {isa = PBXBuildFile; fileRef = 44707D5E1820208F0005B2C6 /* Provisioning.qlgenerator */; };
+		44707D8418205A7C0005B2C6 /* template.html in Resources */ = {isa = PBXBuildFile; fileRef = 44707D8318205A7C0005B2C6 /* template.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,6 +50,7 @@
 		44707D7B1820219E0005B2C6 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		44707D7D182021A90005B2C6 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		44707D8218202BEA0005B2C6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		44707D8318205A7C0005B2C6 /* template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = template.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				44707D6B1820208F0005B2C6 /* Provisioning-Info.plist */,
 				44707D6C1820208F0005B2C6 /* InfoPlist.strings */,
 				44707D751820208F0005B2C6 /* Provisioning-Prefix.pch */,
+				44707D8318205A7C0005B2C6 /* template.html */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -184,6 +187,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44707D8418205A7C0005B2C6 /* template.html in Resources */,
 				44707D6E1820208F0005B2C6 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

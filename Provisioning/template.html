@@ -1,0 +1,198 @@
+<html>
+	<head>
+		<style>
+		body {
+			font-family: HelveticaNeue;
+		}
+		pre {
+			font-family: SourceCodePro, AndaleMono, Courier;
+		}
+		h1#name {
+			font-size: 1.25em;
+			color: #000;
+			}
+		h2 {
+			font-size: 1em;
+			margin: 0 0 0.25em 0;
+		}
+		div#provision_info {
+			width: auto;
+			margin: 0;
+			border-radius: 5px;
+			background-color: #eee;
+		}
+		div.provision_info_header {
+			font-weight: bold;
+			padding: 0.5em;
+			border-radius: 5px 5px 0 0;
+			background-color: #ccc;
+		}
+		div.provision_info_section {
+			padding: 0.5em;
+		}
+		div.provision_info_item {
+			float: left;
+		}
+		div.provision_info_detail {
+			width: auto;
+			text-align: right;
+			color: #666;
+		}
+		div.provision_info_help {
+			width: auto;
+			text-align: right;
+			color: #aaa;
+		}
+		div.provision_info_section > h2 {
+			font-weight: normal;
+			font-family: HelveticaNeue-Medium;
+			color: #999;
+		}
+		
+		div#entitlements {
+			width: auto;
+			margin: 1em 0 0 0;
+			border-radius: 5px;
+			background-color: #eee;
+		}
+		div.entitlements_header {
+			padding: 0.5em;
+			border-radius: 5px 5px 0 0;
+			background-color: #ccc;
+		}
+		div.entitlements_section {
+			padding: 0.5em;
+		}
+		div.entitlements_item {
+		}
+		div.entitlements_data {
+			padding: 0;
+			font-size: 0.9em;
+		}
+		div.entitlements_data > pre {
+			margin: 0;
+		}
+
+		div#certificates {
+			width: auto;
+			margin: 1em 0 0 0;
+			border-radius: 5px;
+			background-color: #eee;
+		}
+		div.certificates_header {
+			padding: 0.5em;
+			border-radius: 5px 5px 0 0;
+			background-color: #ccc;
+		}
+		div.certificates_section {
+			padding: 0.5em;
+		}
+		div.certificates_item {
+		}
+		div.certificates_data {
+		}
+
+		div#devices {
+			width: auto;
+			margin: 1em 0 0 0;
+			border-radius: 5px;
+			background-color: #eee;
+		}
+		div.devices_header {
+			padding: 0.5em;
+			border-radius: 5px 5px 0 0;
+			background-color: #ccc;
+		}
+		div.devices_section {
+			padding: 0.5em;
+		}
+		div.devices_item {
+		}
+		div.devices_data {
+		}
+		div.devices_data > pre {
+			margin: 0;
+			font-size: 0.9em;
+		}
+
+/*
+		div.provision_info_section {
+			outline: 1px solid red;
+		}
+		div.provision_info_item {
+			outline: 1px solid blue;
+		}
+		div.provision_info_detail {
+			outline: 1px solid orange;
+		}
+		div.provision_info_help {
+			outline: 1px solid green;
+		}
+*/
+
+		</style>
+	</head>
+	<body>
+		<div id="provision_info">
+			<div class="provision_info_header">
+				<div class="provision_info_item" id="name">__Name__</div>
+				<div class="provision_info_detail" id="uuid">__UUID__</div>
+			</div>
+			<div class="provision_info_section" id="creation">
+				<div class="provision_info_item" id="creation_summary">__CreationSummary__</div>
+				<div class="provision_info_detail" id="creation_date">__CreationDate__</div>
+			</div>
+			<div class="provision_info_section" id="expiration">
+				<div class="provision_info_item" id="expiration_summary">__ExpirationSummary__</div>
+				<div class="provision_info_detail" id="expiration_date">__ExpirationDate__</div>
+			</div>
+			<div class="provision_info_section" id="team">
+				<h2>Team Name and ID</h2>
+				<div class="provision_info_item" id="team_name">__TeamName__ (__TeamIds__)</div>
+				<div class="provision_info_help">Should match the info in the Member Center under Your Account</div>
+			</div>
+			<div class="provision_info_section" id="app">
+				<h2>App Name and ID</h2>
+				<div class="provision_info_item">__AppIDName__ (__AppIds__)</div>
+				<div class="provision_info_help">Should match the info in the Dev Center under Identifiers</div>
+			</div>
+		</div>
+
+		<div id="certificates">
+			<div class="certificates_header">
+				<div class="certificates_item">Developer Certificates</div>
+			</div>
+			<div class="certificates_section">
+				<div class="certificates_data">
+					__DeveloperCertificatesFormatted__
+				</div>
+			</div>
+		</div>
+
+		<div id="entitlements">
+			<div class="entitlements_header">
+				<div class="entitlements_item">Entitlements</div>
+			</div>
+			<div class="entitlements_section">
+				<div class="entitlements_data">
+					<pre>__EntitlementsFormatted__</pre>
+				</div>
+			</div>
+		</div>
+
+		<div id="devices">
+			<div class="devices_header">
+				<div class="devices_item">Provisioned Devices</div>
+			</div>
+			<div class="devices_section">
+				<div class="devices_data">__ProvisionedDevicesCount__</div>
+			</div>
+			<div class="devices_section">
+				<div class="devices_data">
+					<pre>__ProvisionedDevicesFormatted__</pre>
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>

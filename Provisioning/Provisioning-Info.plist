@@ -51,14 +51,10 @@
 	<string>Copyright © 2013 The Iconfactory. All rights reserved.</string>
 	<key>QLNeedsToBeRunInMainThread</key>
 	<false/>
-	<!--
-	<key>QLNeedsToBeRunInMainThread</key>
-	<true/>
-	 -->
 	<key>QLPreviewHeight</key>
-	<real>400</real>
+	<integer>600</integer>
 	<key>QLPreviewWidth</key>
-	<real>600</real>
+	<integer>800</integer>
 	<key>QLSupportsConcurrentRequests</key>
 	<false/>
 	<key>QLThumbnailMinimumSize</key>

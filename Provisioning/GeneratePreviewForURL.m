@@ -36,12 +36,6 @@ void displayKeyAndValue(NSUInteger level, NSString *key, id value, NSMutableStri
 	else if ([value isKindOfClass:[NSArray class]]) {
 		[output appendFormat:@"%*s%@ = (\n", indent, "", key];
 		NSArray *array = (NSArray *)value;
-
-		// special case for provisioned devices: sort them so it's easier to find matches visually
-		if ([key isEqualToString:@"ProvisionedDevices"]) {
-			array = [array sortedArrayUsingSelector:@selector(compare:)];
-		}
-
 		for (id value in array) {
 			displayKeyAndValue(level + 1, nil, value, output);
 		}
@@ -49,28 +43,11 @@ void displayKeyAndValue(NSUInteger level, NSString *key, id value, NSMutableStri
 	}
 	else if ([value isKindOfClass:[NSData class]]) {
 		NSData *data = (NSData *)value;
-
-		// try to display the data as a certificate
-		SecCertificateRef certificateRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)data);
-		if (certificateRef) {
-			CFStringRef summaryRef = SecCertificateCopySubjectSummary(certificateRef);
-			if (key) {
-				[output appendFormat:@"%*s%@ = %@\n", indent, "", key, (__bridge NSString *)summaryRef];
-			}
-			else {
-				[output appendFormat:@"%*s%@\n", indent, "", (__bridge NSString *)summaryRef];
-			}
-			
-			CFRelease(summaryRef);
-			CFRelease(certificateRef);
+		if (key) {
+			[output appendFormat:@"%*s%@ = %zd bytes of data\n", indent, "", key, [data length]];
 		}
 		else {
-			if (key) {
-				[output appendFormat:@"%*s%@ = %zd bytes of data\n", indent, "", key, [data length]];
-			}
-			else {
-				[output appendFormat:@"%*s%zd bytes of data\n", indent, "", [data length]];
-			}
+			[output appendFormat:@"%*s%zd bytes of data\n", indent, "", [data length]];
 		}
 	}
 	else {

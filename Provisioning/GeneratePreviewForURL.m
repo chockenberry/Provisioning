@@ -242,6 +242,14 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						[synthesizedInfo setObject:@"Distribution Profile" forKey:@"ProvisionedDevicesCount"];
 					}
 
+#if 0
+// the raw data for the provisioning profile can easily be generated, but I can't find a way to copy it to the clipboard in the HTML that's generated
+					{
+						synthesizedValue = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+						[synthesizedInfo setObject:synthesizedValue forKey:@"RawData"];
+					}
+// automatically copying the info to the clipboard using NSPasteboard without any user interaction is a bad idea, too...
+#endif
 					{
 						synthesizedValue = [[NSBundle bundleWithIdentifier:@"com.iconfactory.Provisioning"] objectForInfoDictionaryKey:@"CFBundleVersion"];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"BundleVersion"];

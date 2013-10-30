@@ -99,6 +99,37 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					NSMutableDictionary *synthesizedInfo = [NSMutableDictionary dictionary];
 					id value = nil;
 					NSString *synthesizedValue = nil;
+					NSDateFormatter *dateFormatter = [NSDateFormatter new];
+					[dateFormatter setDateFormat:@"h:mm a 'on' EEEE',' MMMM d',' yyyy"];
+					NSCalendar *calendar = [NSCalendar currentCalendar];
+
+					value = [propertyList objectForKey:@"CreationDate"];
+					if ([value isKindOfClass:[NSDate class]]) {
+						NSDate *date = (NSDate *)value;
+						synthesizedValue = [dateFormatter stringFromDate:date];
+						[synthesizedInfo setObject:synthesizedValue forKey:@"CreationDateFormatted"];
+
+						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:date toDate:[NSDate date] options:0];
+						synthesizedValue = [NSString stringWithFormat:@"Created %zd days ago", dateComponents.day];
+						[synthesizedInfo setObject:synthesizedValue forKey:@"CreationSummary"];
+					}
+					
+					value = [propertyList objectForKey:@"ExpirationDate"];
+					if ([value isKindOfClass:[NSDate class]]) {
+						NSDate *date = (NSDate *)value;
+						synthesizedValue = [dateFormatter stringFromDate:date];
+						[synthesizedInfo setObject:synthesizedValue forKey:@"ExpirationDateFormatted"];
+						
+						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:[NSDate date] toDate:date options:0];
+						// TODO: if negative, show "Expired" instead...
+						if (dateComponents.day < 0) {
+							synthesizedValue = [NSString stringWithFormat:@"Expired %zd days ago", -dateComponents.day];
+						}
+						else {
+							synthesizedValue = [NSString stringWithFormat:@"Expires in %zd days", dateComponents.day];
+						}
+						[synthesizedInfo setObject:synthesizedValue forKey:@"ExpirationSummary"];
+					}
 					
 					value = [propertyList objectForKey:@"ApplicationIdentifierPrefix"];
 					if ([value isKindOfClass:[NSArray class]]) {

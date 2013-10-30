@@ -44,16 +44,12 @@
       </PathRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-g /Users/craig/Library/QuickLook/Provisioning.qlgenerator"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-c mobileprovision"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "-p &quot;~/Library/MobileDevice/Provisioning\ Profiles/Iconfactory_Development.mobileprovision&quot;"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-p &quot;~/Library/MobileDevice/Provisioning\ Profiles/Iconfactory_Distribution.mobileprovision&quot;"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>

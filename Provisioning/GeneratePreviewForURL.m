@@ -60,6 +60,8 @@ void displayKeyAndValue(NSUInteger level, NSString *key, id value, NSMutableStri
 	}
 }
 
+#define SIGNED_CODE 1
+
 OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options)
 {
     @autoreleasepool {
@@ -82,8 +84,17 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			if (data) {
 				// check if the request was cancelled
 				if (! QLPreviewRequestIsCancelled(preview)) {
-#if 1
-					// eventually, the fileContents will be formatted using an HTML template...
+
+#if !SIGNED_CODE
+					// get the iOS devices that Xcode has seen, which only works if the plug-in is not running in a sandbox
+					NSUserDefaults *xcodeDefaults = [NSUserDefaults new];
+					[xcodeDefaults addSuiteNamed:@"com.apple.dt.XCode"];
+					NSArray *savedDevices = [xcodeDefaults objectForKey:@"DVTSavediPhoneDevices"];
+
+					// maybe piping the following command through a shell will allow us to read the data...
+					// $ defaults read com.apple.dt.XCode DVTSavediPhoneDevices
+#endif
+
 					NSURL *htmlURL = [[NSBundle bundleWithIdentifier:@"com.iconfactory.Provisioning"] URLForResource:@"template" withExtension:@"html"];
 					NSMutableString *html = [NSMutableString stringWithContentsOfURL:htmlURL encoding:NSUTF8StringEncoding error:NULL];
 
@@ -123,7 +134,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:[NSDate date] toDate:date options:0];
 						// TODO: if negative, show "Expired" instead...
 						if (dateComponents.day < 0) {
-							synthesizedValue = [NSString stringWithFormat:@"Expired %zd days ago", -dateComponents.day];
+							synthesizedValue = [NSString stringWithFormat:@"<span class='expired'>Expired %zd days ago</span>", -dateComponents.day];
 						}
 						else {
 							synthesizedValue = [NSString stringWithFormat:@"Expires in %zd days", dateComponents.day];
@@ -149,8 +160,9 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					value = [propertyList objectForKey:@"Entitlements"];
 					if ([value isKindOfClass:[NSDictionary class]]) {
 						NSDictionary *dictionary = (NSDictionary *)value;
-						NSMutableString *synthesizedValue = [NSMutableString string];
-						displayKeyAndValue(0, nil, dictionary, synthesizedValue);
+						NSMutableString *dictionaryFormatted = [NSMutableString string];
+						displayKeyAndValue(0, nil, dictionary, dictionaryFormatted);
+						synthesizedValue = [NSString stringWithFormat:@"<pre>%@</pre>", dictionaryFormatted];
 						
 						[synthesizedInfo setObject:synthesizedValue forKey:@"EntitlementsFormatted"];
 					}
@@ -182,15 +194,57 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					if ([value isKindOfClass:[NSArray class]]) {
 						NSArray *array = (NSArray *)value;
 						NSArray *sortedArray = [array sortedArrayUsingSelector:@selector(compare:)];
-						synthesizedValue = [sortedArray componentsJoinedByString:@"\n"];
+
+						NSString *currentPrefix = nil;
+						NSMutableString *devices = [NSMutableString string];
+						[devices appendString:@"<table>\n"];
+						BOOL evenRow = NO;
+						for (NSString *device in sortedArray) {
+							// compute the prefix for the first column of the table
+							NSString *displayPrefix = @"";
+							NSString *devicePrefix = [device substringToIndex:1];
+							if (! [currentPrefix isEqualToString:devicePrefix]) {
+								currentPrefix = devicePrefix;
+								displayPrefix = [NSString stringWithFormat:@"%@:", devicePrefix];
+							}
+							
+#if !SIGNED_CODE
+							// check if Xcode has seen the device
+							NSString *deviceName = @"";
+							NSString *deviceSoftwareVerson = @"";
+							NSPredicate *predicate = [NSPredicate predicateWithFormat:@"deviceIdentifier = %@", device];
+							NSArray *matchingDevices = [savedDevices filteredArrayUsingPredicate:predicate];
+							if ([matchingDevices count] > 0) {
+								id matchingDevice = [matchingDevices firstObject];
+								if ([matchingDevice isKindOfClass:[NSDictionary class]]) {
+									NSDictionary *matchingDeviceDictionary = (NSDictionary *)matchingDevice;
+									deviceName = [matchingDeviceDictionary objectForKey:@"deviceName"];
+									deviceSoftwareVerson = [matchingDeviceDictionary objectForKey:@"deviceSoftwareVersion"];
+								}
+							}
+							
+							[devices appendFormat:@"<tr class='%s'><td>%@</td><td>%@</td><td>%@</td><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), displayPrefix, device, deviceName, deviceSoftwareVerson];
+#else
+							[devices appendFormat:@"<tr class='%s'><td>%@</td><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), displayPrefix, device];
+#endif
+							evenRow = !evenRow;
+						}
+						[devices appendString:@"</table>\n"];
+						
+						synthesizedValue = [devices copy];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"ProvisionedDevicesFormatted"];
 						
 						synthesizedValue = [NSString stringWithFormat:@"%zd Devices", [array count]];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"ProvisionedDevicesCount"];
 					}
 					else {
-						[synthesizedInfo setObject:@"" forKey:@"ProvisionedDevicesFormatted"];
-						[synthesizedInfo setObject:@"No Devices" forKey:@"ProvisionedDevicesCount"];
+						[synthesizedInfo setObject:@"No Devices" forKey:@"ProvisionedDevicesFormatted"];
+						[synthesizedInfo setObject:@"Distribution Profile" forKey:@"ProvisionedDevicesCount"];
+					}
+
+					{
+						synthesizedValue = [[NSBundle bundleWithIdentifier:@"com.iconfactory.Provisioning"] objectForInfoDictionaryKey:@"CFBundleVersion"];
+						[synthesizedInfo setObject:synthesizedValue forKey:@"BundleVersion"];
 					}
 
 					for (NSString *key in [synthesizedInfo allKeys]) {
@@ -204,15 +258,6 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						(__bridge NSString *)kQLPreviewPropertyMIMETypeKey : @"text/html" };
 					
 					QLPreviewRequestSetDataRepresentation(preview, (__bridge CFDataRef)[html dataUsingEncoding:NSUTF8StringEncoding], kUTTypeHTML, (__bridge CFDictionaryRef)properties);
-#else
-					// for now, just use a plain-text representation
-					NSDictionary *propertyList = [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:NULL];
-					if (propertyList) {
-						NSMutableString *output = [NSMutableString string];
-						displayKeyAndValue(0, nil, propertyList, output);
-						QLPreviewRequestSetDataRepresentation(preview, (__bridge CFDataRef)[output dataUsingEncoding:NSUTF8StringEncoding], kUTTypePlainText, NULL);
-					}
-#endif
 				}
 			}
 		}

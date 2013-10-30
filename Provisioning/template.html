@@ -3,194 +3,192 @@
 		<style>
 		body {
 			font-family: HelveticaNeue;
+			margin: 0.5em;
 		}
 		pre {
 			font-family: SourceCodePro, AndaleMono, Courier;
 		}
-		h1#name {
-			font-size: 1.25em;
-			color: #000;
-			}
-		h2 {
-			font-size: 1em;
-			margin: 0 0 0.25em 0;
+		a {
+			color: #0087d4;
+			text-decoration: none;
 		}
-		div#provision_info {
+		
+		div.container {
 			width: auto;
-			margin: 0;
-			border-radius: 5px;
+			margin: 0 0 0.5em 0;
+			border-radius: 3px;
+			border: 1px solid #ddd;
 			background-color: #eee;
 		}
-		div.provision_info_header {
-			font-weight: bold;
-			padding: 0.5em;
-			border-radius: 5px 5px 0 0;
-			background-color: #ccc;
+		div.last {
+			margin: 0;
 		}
-		div.provision_info_section {
+		div.label {
+			font-weight: normal;
+			font-family: HelveticaNeue;
+		}
+		div.header {
+			padding: 0.5em;
+			border-radius: 3px 3px 0 0;
+			background-color: #ddd;
+		}
+		div.header > div.label {
+		}
+		div.section {
 			padding: 0.5em;
 		}
-		div.provision_info_item {
+		div.section > div.label {
+			color: #aaa;
+		}
+		div.item {
 			float: left;
 		}
-		div.provision_info_detail {
+		div.detail {
 			width: auto;
 			text-align: right;
 			color: #666;
 		}
-		div.provision_info_help {
+		div.help {
 			width: auto;
 			text-align: right;
 			color: #aaa;
 		}
-		div.provision_info_section > h2 {
-			font-weight: normal;
-			font-family: HelveticaNeue-Medium;
-			color: #999;
+		div.data > pre {
+			margin: 0;
+			font-size: 0.9em;
+		}
+		div.data > table {
+			font-size: 0.9em;
+			border-collapse: collapse;
+		}
+		div.data > table > tbody {
+		}
+		div.data > table > tbody > tr > td {
+			margin: 0em;
+			padding: 0.25em;
+		}
+		div.data > table > tbody > tr.even {
+			background-color: #ddd;
 		}
 		
-		div#entitlements {
-			width: auto;
-			margin: 1em 0 0 0;
-			border-radius: 5px;
-			background-color: #eee;
-		}
-		div.entitlements_header {
-			padding: 0.5em;
-			border-radius: 5px 5px 0 0;
-			background-color: #ccc;
-		}
-		div.entitlements_section {
-			padding: 0.5em;
-		}
-		div.entitlements_item {
-		}
-		div.entitlements_data {
-			padding: 0;
-			font-size: 0.9em;
-		}
-		div.entitlements_data > pre {
-			margin: 0;
+		span.expired {
+			color: #9a0003;
 		}
 
-		div#certificates {
-			width: auto;
-			margin: 1em 0 0 0;
-			border-radius: 5px;
-			background-color: #eee;
+		div#provision_info > div.header {
+			font-weight: bold;
 		}
-		div.certificates_header {
-			padding: 0.5em;
-			border-radius: 5px 5px 0 0;
-			background-color: #ccc;
-		}
-		div.certificates_section {
-			padding: 0.5em;
-		}
-		div.certificates_item {
-		}
-		div.certificates_data {
+		div#provision_info > div.header > div.label {
+			font-weight: bold;
+			float: left;
 		}
 
-		div#devices {
-			width: auto;
-			margin: 1em 0 0 0;
-			border-radius: 5px;
-			background-color: #eee;
+		div#entitlements > div.section > div.data {
+			font-family: SourceCodePro, AndaleMono, Courier;
 		}
-		div.devices_header {
-			padding: 0.5em;
-			border-radius: 5px 5px 0 0;
-			background-color: #ccc;
+		div#devices > div.section > div.data {
+			font-family: SourceCodePro, AndaleMono, Courier;
 		}
-		div.devices_section {
-			padding: 0.5em;
+		div#ad > div.section {
+			color: #999;
 		}
-		div.devices_item {
-		}
-		div.devices_data {
-		}
-		div.devices_data > pre {
-			margin: 0;
-			font-size: 0.9em;
+		div#ad > div.section > div.summary > a {
+			color: #6aa1d3;
 		}
 
 /*
-		div.provision_info_section {
-			outline: 1px solid red;
+		div.label {
+			outline: 1px solid purple;
 		}
-		div.provision_info_item {
+		div.item {
 			outline: 1px solid blue;
 		}
-		div.provision_info_detail {
+		div.detail {
 			outline: 1px solid orange;
 		}
-		div.provision_info_help {
+		div.help {
 			outline: 1px solid green;
 		}
+		div.summary {
+			outline: 1px solid brown;
+		}
+		div.data {
+			outline: 1px solid gray;
+		}
 */
-
 		</style>
 	</head>
 	<body>
-		<div id="provision_info">
-			<div class="provision_info_header">
-				<div class="provision_info_item" id="name">__Name__</div>
-				<div class="provision_info_detail" id="uuid">__UUID__</div>
+		<div class="container" id="provision_info">
+			<div class="header">
+				<div class="label" id="name">__Name__</div>
+				<div class="detail" id="uuid">__UUID__</div>
 			</div>
-			<div class="provision_info_section" id="creation">
-				<div class="provision_info_item" id="creation_summary">__CreationSummary__</div>
-				<div class="provision_info_detail" id="creation_date">__CreationDateFormatted__</div>
+			<div class="section" id="creation">
+				<div class="item" id="creation_summary">__CreationSummary__</div>
+				<div class="detail" id="creation_date">__CreationDateFormatted__</div>
 			</div>
-			<div class="provision_info_section" id="expiration">
-				<div class="provision_info_item" id="expiration_summary">__ExpirationSummary__</div>
-				<div class="provision_info_detail" id="expiration_date">__ExpirationDateFormatted__</div>
+			<div class="section" id="expiration">
+				<div class="item" id="expiration_summary">__ExpirationSummary__</div>
+				<div class="detail" id="expiration_date">__ExpirationDateFormatted__</div>
 			</div>
-			<div class="provision_info_section" id="team">
-				<h2>Team Name and ID</h2>
-				<div class="provision_info_item" id="team_name">__TeamName__ (__TeamIds__)</div>
-				<div class="provision_info_help">Should match the info in the Member Center under Your Account</div>
+			<div class="section" id="team">
+				<div class="label">Team Name and ID</div>
+				<div class="item" id="team_name">__TeamName__ (__TeamIds__)</div>
+				<div class="help">Check info in the <a href="https://developer.apple.com/membercenter/index.action#accountSummary">Member Center for Your Account</a></div>
 			</div>
-			<div class="provision_info_section" id="app">
-				<h2>App Name and ID</h2>
-				<div class="provision_info_item">__AppIDName__ (__AppIds__)</div>
-				<div class="provision_info_help">Should match the info in the Dev Center under Identifiers</div>
-			</div>
-		</div>
-
-		<div id="certificates">
-			<div class="certificates_header">
-				<div class="certificates_item">Developer Certificates</div>
-			</div>
-			<div class="certificates_section">
-				<div class="certificates_data">
-					__DeveloperCertificatesFormatted__
-				</div>
+			<div class="section" id="app">
+				<div class="label">App Name and ID</div>
+				<div class="item">__AppIDName__ (__AppIds__)</div>
+				<div class="help">Check info in the <a href="https://developer.apple.com/account/ios/identifiers/bundle/bundleList.action">Dev Center for Identifiers</a></div>
 			</div>
 		</div>
 
-		<div id="entitlements">
-			<div class="entitlements_header">
-				<div class="entitlements_item">Entitlements</div>
+		<div class="container" id="devices">
+			<div class="header">
+				<div class="label">Provisioned Devices</div>
 			</div>
-			<div class="entitlements_section">
-				<div class="entitlements_data">
-					<pre>__EntitlementsFormatted__</pre>
-				</div>
+			<div class="section">
+				<div class="item">__ProvisionedDevicesCount__</div>
+				
+				<div class="help">Update devices in the <a href="https://developer.apple.com/account/ios/device/deviceList.action">Dev Center for Devices</a></div>
+			</div>
+			<div class="section">
+				<!--
+				<div class="data"><table>
+				<tr class='even'><td>0:</td><td>012345690123456901234569012345690123456901234569</td></tr>
+				<tr class='odd'><td></td><td>012345690123456901234569012345690123456901234569</td></tr>
+				<tr class='even'><td>1:</td><td>123456901234569012345690123456901234569012345690</td></tr>
+				</table></div>
+				-->
+				<div class="data">__ProvisionedDevicesFormatted__</div>
 			</div>
 		</div>
 
-		<div id="devices">
-			<div class="devices_header">
-				<div class="devices_item">Provisioned Devices</div>
+		<div class="container" id="entitlements">
+			<div class="header">
+				<div class="label">Entitlements</div>
 			</div>
-			<div class="devices_section">
-				<div class="devices_data">__ProvisionedDevicesCount__</div>
+			<div class="section">
+				<div class="data">__EntitlementsFormatted__</div>
 			</div>
-			<div class="devices_section">
-				<div class="devices_data">
-					<pre>__ProvisionedDevicesFormatted__</pre>
-				</div>
+		</div>
+
+		<div class="container" id="certificates">
+			<div class="header">
+				<div class="label">Developer Certificates</div>
+			</div>
+			<div class="section">
+				<div class="data">__DeveloperCertificatesFormatted__</div>
+			</div>
+		</div>
+
+		<div class="container last" id="ad">
+			<div class="header">
+				<div class="label">Version __BundleVersion__</div>
+			</div>
+			<div class="section">
+				<div class="summary">The Provisioning QuickLook plug-in is brought to you by <a href="http://iconfactory.com">The Iconfactory</a>. We do <a href="http://design.iconfactory.com">design work for many successful apps</a> and would love to help with yours. And if you find this tool useful, just wait until you <a href="http://xscopeapp.com">check out xScope!</a></div>
 			</div>
 		</div>
 

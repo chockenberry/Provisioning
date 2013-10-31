@@ -111,7 +111,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					id value = nil;
 					NSString *synthesizedValue = nil;
 					NSDateFormatter *dateFormatter = [NSDateFormatter new];
-					[dateFormatter setDateFormat:@"h:mm a 'on' EEEE',' MMMM d',' yyyy"];
+					[dateFormatter setDateFormat:@"EEEE',' MMMM d',' yyyy 'at' h:mm a"];
 					NSCalendar *calendar = [NSCalendar currentCalendar];
 
 					value = [propertyList objectForKey:@"CreationDate"];
@@ -255,6 +255,16 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						[synthesizedInfo setObject:synthesizedValue forKey:@"BundleVersion"];
 					}
 
+					// older provisioning files don't include TeamName or AppIDName keys
+					value = [propertyList objectForKey:@"TeamName"];
+					if (! value) {
+						[synthesizedInfo setObject:@"" forKey:@"TeamName"];
+					}
+					value = [propertyList objectForKey:@"AppIDName"];
+					if (! value) {
+						[synthesizedInfo setObject:@"" forKey:@"AppIDName"];
+					}
+					
 					for (NSString *key in [synthesizedInfo allKeys]) {
 						NSString *replacementValue = [synthesizedInfo objectForKey:key];
 						NSString *replacementToken = [NSString stringWithFormat:@"__%@__", key];

@@ -65,21 +65,18 @@ void displayKeyAndValue(NSUInteger level, NSString *key, id value, NSMutableStri
 OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options)
 {
     @autoreleasepool {
-		
-        // Load the property list from the URL
         NSURL *URL = (__bridge NSURL *)url;
-		NSLog(@"URL = %@", URL);
 
-		CMSDecoderRef decoder = NULL;
-		CMSDecoderCreate(&decoder);
-		
 		NSData *fileData = [NSData dataWithContentsOfURL:URL];
 		if (fileData) {
+			CMSDecoderRef decoder = NULL;
+			CMSDecoderCreate(&decoder);
 			CMSDecoderUpdateMessage(decoder, fileData.bytes, fileData.length);
 			CMSDecoderFinalizeMessage(decoder);
 			CFDataRef dataRef = NULL;
 			CMSDecoderCopyContent(decoder, &dataRef);
 			NSData *data = (NSData *)CFBridgingRelease(dataRef);
+			CFRelease(decoder);
 			
 			if (data) {
 				// check if the request was cancelled
@@ -90,9 +87,19 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					NSUserDefaults *xcodeDefaults = [NSUserDefaults new];
 					[xcodeDefaults addSuiteNamed:@"com.apple.dt.XCode"];
 					NSArray *savedDevices = [xcodeDefaults objectForKey:@"DVTSavediPhoneDevices"];
-
-					// maybe piping the following command through a shell will allow us to read the data...
+					NSLog(@"savedDevices = %@", savedDevices);
+					
+					// the sandbox also thwarts attempts to read the data from the shell command
 					// $ defaults read com.apple.dt.XCode DVTSavediPhoneDevices
+					NSTask *task = [NSTask new];
+					[task setLaunchPath:@"/usr/bin/defaults"];
+					[task setArguments:@[ @"read", @"com.apple.dt.XCode", @"DVTSavediPhoneDevices" ]];
+					[task setStandardOutput:[NSPipe pipe]];
+					[task launch];
+					
+					NSData *pipeData = [[[task standardOutput] fileHandleForReading] readDataToEndOfFile];
+					NSString *pipeString = [[NSString alloc] initWithData:pipeData encoding:NSUTF8StringEncoding];
+					NSLog(@"pipeString = %@", pipeString);
 #endif
 
 					NSURL *htmlURL = [[NSBundle bundleWithIdentifier:@"com.iconfactory.Provisioning"] URLForResource:@"template" withExtension:@"html"];

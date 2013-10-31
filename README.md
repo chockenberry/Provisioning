@@ -1,9 +1,15 @@
 Provisioning
 ============
 
-A QuickLook plug-in for .mobileprovision files
+A Quick Look plug-in for .mobileprovision files
 
 A ZIP file with the latest version can be [downloaded from the Releases page](https://github.com/chockenberry/Provisioning/releases).
+
+If you want to copy information from the Quick Look preview, you need to [change a hidden Finder preference](http://www.macworld.com/article/1164668/select_and_copy_text_within_quick_look_previews.html) using the command line:
+
+	$ defaults write com.apple.finder QLEnableTextSelection -bool TRUE
+	$ killall Finder
+
 
 Project Notes
 -------------

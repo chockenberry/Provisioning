@@ -19,6 +19,7 @@
 		44707D7E182021A90005B2C6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44707D7D182021A90005B2C6 /* Security.framework */; };
 		44707D80182023760005B2C6 /* Provisioning.qlgenerator in Copy Plug-in to ~/Library/QuickLook */ = {isa = PBXBuildFile; fileRef = 44707D5E1820208F0005B2C6 /* Provisioning.qlgenerator */; };
 		44707D8418205A7C0005B2C6 /* template.html in Resources */ = {isa = PBXBuildFile; fileRef = 44707D8318205A7C0005B2C6 /* template.html */; };
+		44707DC61823198A0005B2C6 /* Read Me.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 44707DC51823198A0005B2C6 /* Read Me.rtf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +52,7 @@
 		44707D7D182021A90005B2C6 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		44707D8218202BEA0005B2C6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		44707D8318205A7C0005B2C6 /* template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = template.html; sourceTree = "<group>"; };
+		44707DC51823198A0005B2C6 /* Read Me.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "Read Me.rtf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				44707D8218202BEA0005B2C6 /* README.md */,
+				44707DC51823198A0005B2C6 /* Read Me.rtf */,
 				44707D691820208F0005B2C6 /* Provisioning */,
 				44707D601820208F0005B2C6 /* Frameworks */,
 				44707D5F1820208F0005B2C6 /* Products */,
@@ -187,6 +190,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44707DC61823198A0005B2C6 /* Read Me.rtf in Resources */,
 				44707D8418205A7C0005B2C6 /* template.html in Resources */,
 				44707D6E1820208F0005B2C6 /* InfoPlist.strings in Resources */,
 			);

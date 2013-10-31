@@ -90,6 +90,13 @@
 		div#devices > div.section > div.data {
 			font-family: SourceCodePro, AndaleMono, Courier;
 		}
+		div#data > div.section > div.summary {
+			margin-bottom: 0.5em;
+			color: #999;
+		}
+		div#data > div.section > div.summary > a {
+			color: #6aa1d3;
+		}
 		div#ad > div.section {
 			color: #999;
 		}
@@ -121,6 +128,20 @@
 		}
 */
 		</style>
+		<script>
+			function toggleDetails() {
+				var buttonElement = document.getElementById('toggle_button')
+				var divElement = document.getElementById('raw_data');
+				if (divElement.style.display == 'none') {
+					divElement.style.display = 'block';
+					buttonElement.innerHTML = 'Hide';
+				}
+				else {
+					divElement.style.display = 'none';
+					buttonElement.innerHTML = 'Show';
+				}
+			}
+		</script>
 	</head>
 	<body>
 		<div class="container" id="provision_info">
@@ -187,6 +208,19 @@
 			</div>
 		</div>
 
+		<a id="toggle"></a>
+
+		<div class="container" id="data">
+			<div class="header">
+				<div class="item">Raw Data</div>
+				<div class="detail"><a href="#toggle" onclick="toggleDetails();" id="toggle_button">Show</a></div>
+			</div>
+			<div class="section" id="raw_data" style="display: none;">
+				<div class="summary">Want to copy text from this Quick Look preview? <a href="http://www.macworld.com/article/1164668/select_and_copy_text_within_quick_look_previews.html">Follow these instructions</a>.</div>
+				<div class="data">__RawData__</div>
+			</div>
+		</div>
+		
 		<div class="container last" id="ad">
 			<div class="header">
 				<div class="label">Provisioning QuickLook Generator • Version __BundleVersion__</div>
@@ -194,6 +228,9 @@
 			<div class="section">
 				<div class="summary">This software is brought to you by <a href="http://iconfactory.com">The Iconfactory</a>. We do <a href="http://design.iconfactory.com">design work for many successful apps</a> and would love to help with yours. And if you find this tool useful, just wait until you <a href="http://xscopeapp.com">check out xScope!</a></div>
 			</div>
+		</div>
+		
+		<div>
 		</div>
 	</body>
 </html>

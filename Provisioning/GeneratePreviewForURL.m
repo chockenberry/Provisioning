@@ -227,6 +227,25 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 							if ([matchingDevices count] > 0) {
 								id matchingDevice = [matchingDevices firstObject];
 								if ([matchingDevice isKindOfClass:[NSDictionary class]]) {
+									/* the matchingDevice dictionary looks like this:
+										{
+											buildVersion = 9A334;
+											deviceArchitecture = armv7;
+											deviceBluetoothMAC = "34:15:9e:82:XX:XX";
+											deviceCapacity = 30448345088;
+											deviceClass = iPod;
+											deviceColorString = iPodShinyMetal;
+											deviceDevelopmentStatus = Development;
+											deviceIdentifier = 2eaefee8081ca97fadf0be5f2822b458XXXXXXXX;
+											deviceName = Lustro;
+											deviceSerialNumber = 1B0101XXXXXX;
+											deviceSoftwareVersion = "5.0 (9A334)";
+											deviceType = "iPod3,1";
+											deviceWiFiMAC = "34:15:9e:83:XX:XX";
+											platformIdentifier = "com.apple.platform.iphoneos";
+											productVersion = "5.0";
+										},
+									*/
 									NSDictionary *matchingDeviceDictionary = (NSDictionary *)matchingDevice;
 									deviceName = [matchingDeviceDictionary objectForKey:@"deviceName"];
 									deviceSoftwareVerson = [matchingDeviceDictionary objectForKey:@"deviceSoftwareVersion"];

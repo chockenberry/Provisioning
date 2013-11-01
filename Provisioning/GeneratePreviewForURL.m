@@ -141,10 +141,13 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:[NSDate date] toDate:date options:0];
 						// TODO: if negative, show "Expired" instead...
 						if (dateComponents.day < 0) {
-							synthesizedValue = [NSString stringWithFormat:@"<span class='expired'>Expired %zd days ago</span>", -dateComponents.day];
+							synthesizedValue = [NSString stringWithFormat:@"<span class='error'>Expired %zd days ago</span>", -dateComponents.day];
+						}
+						else if (dateComponents.day < 30) {
+							synthesizedValue = [NSString stringWithFormat:@"<span class='warning'>Expires in %zd days</span>", dateComponents.day];
 						}
 						else {
-							synthesizedValue = [NSString stringWithFormat:@"Expires in %zd days", dateComponents.day];
+ 							synthesizedValue = [NSString stringWithFormat:@"Expires in %zd days", dateComponents.day];
 						}
 						[synthesizedInfo setObject:synthesizedValue forKey:@"ExpirationSummary"];
 					}

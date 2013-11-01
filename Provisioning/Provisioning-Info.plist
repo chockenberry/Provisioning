@@ -14,6 +14,14 @@
 				<string>com.apple.mobileprovision</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>QLGenerator</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.apple.iphone.mobileprovision</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>

@@ -193,7 +193,17 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 								CFRelease(certificateRef);
 							}
 						}
-						synthesizedValue = [summaries componentsJoinedByString:@"<br/>"];
+
+						NSMutableString *certificates = [NSMutableString string];
+						[certificates appendString:@"<table>\n"];
+						BOOL evenRow = NO;
+						for (NSString *summary in summaries) {
+							[certificates appendFormat:@"<tr class='%s'><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), summary];
+							evenRow = !evenRow;
+						}
+						[certificates appendString:@"</table>\n"];
+						
+						synthesizedValue = [certificates copy];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"DeveloperCertificatesFormatted"];
 					}
 					else {

@@ -225,7 +225,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 							NSString *devicePrefix = [device substringToIndex:1];
 							if (! [currentPrefix isEqualToString:devicePrefix]) {
 								currentPrefix = devicePrefix;
-								displayPrefix = [NSString stringWithFormat:@"%@:", devicePrefix];
+								displayPrefix = [NSString stringWithFormat:@"%@ ➞ ", devicePrefix];
 							}
 							
 #if !SIGNED_CODE

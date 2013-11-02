@@ -72,6 +72,13 @@
 		div.data > table > tbody > tr.even {
 			background-color: #ddd;
 		}
+		div.summary {
+			margin-bottom: 0.5em;
+			color: #999;
+		}
+		div.summary > a {
+			color: #6aa1d3;
+		}
 		
 		div#provision_info > div.header {
 			font-weight: bold;
@@ -86,18 +93,14 @@
 		div#devices > div.section > div.data {
 			font-family: SourceCodePro, AndaleMono, Courier;
 		}
-		div#data > div.section > div.summary {
-			margin-bottom: 0.5em;
-			color: #999;
+		div#certificates > div.section {
+			overflow: auto;
 		}
-		div#data > div.section > div.summary > a {
-			color: #6aa1d3;
+		div#certificates > div.section > div.data {
+			float: left;
 		}
 		div#ad > div.section {
 			color: #999;
-		}
-		div#ad > div.section > div.summary > a {
-			color: #6aa1d3;
 		}
 		div#ad > div.header {
 			color: #999;
@@ -177,6 +180,7 @@
 				<div class="label">Provisioned Devices</div>
 			</div>
 			<div class="section">
+				<div class="summary">Your device's UDID must be included in this list before it can run the app built with this profile.</div>
 				<div class="item">__ProvisionedDevicesCount__</div>
 				
 				<div class="help">Update <a href="https://developer.apple.com/account/ios/device/deviceList.action">Devices in Dev Center</a></div>
@@ -207,7 +211,10 @@
 				<div class="label">Developer Certificates</div>
 			</div>
 			<div class="section">
+				<div class="summary">Your <a href="file:///Applications/Utilities/Keychain%20Access.app">Keychain</a> must include at least one of these certificates before Xcode can build and sign the app with this profile.</div>
+				<!--<div class="data">One<br/>Two<br/>Three<br/>Four<br/></div>-->
 				<div class="data">__DeveloperCertificatesFormatted__</div>
+				<div class="help">Check <a href="https://developer.apple.com/account/ios/certificate/certificateList.action">Certificates in Dev Center</a></div>
 			</div>
 		</div>
 

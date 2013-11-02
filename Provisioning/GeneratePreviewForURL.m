@@ -296,11 +296,11 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					// older provisioning files don't include TeamName or AppIDName keys
 					value = [propertyList objectForKey:@"TeamName"];
 					if (! value) {
-						[synthesizedInfo setObject:@"" forKey:@"TeamName"];
+						[synthesizedInfo setObject:@"<em>Team name not available</em>" forKey:@"TeamName"];
 					}
 					value = [propertyList objectForKey:@"AppIDName"];
 					if (! value) {
-						[synthesizedInfo setObject:@"" forKey:@"AppIDName"];
+						[synthesizedInfo setObject:@"<em>App name not available</em>" forKey:@"AppIDName"];
 					}
 					
 					for (NSString *key in [synthesizedInfo allKeys]) {

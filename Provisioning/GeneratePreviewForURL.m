@@ -60,6 +60,7 @@ void displayKeyAndValue(NSUInteger level, NSString *key, id value, NSMutableStri
 	}
 }
 
+// all code in Mavericks needs to be signed, so we don't get some nice features...  
 #define SIGNED_CODE 1
 
 OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options)
@@ -83,12 +84,13 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 				if (! QLPreviewRequestIsCancelled(preview)) {
 
 #if !SIGNED_CODE
+#if 1
 					// get the iOS devices that Xcode has seen, which only works if the plug-in is not running in a sandbox
 					NSUserDefaults *xcodeDefaults = [NSUserDefaults new];
 					[xcodeDefaults addSuiteNamed:@"com.apple.dt.XCode"];
 					NSArray *savedDevices = [xcodeDefaults objectForKey:@"DVTSavediPhoneDevices"];
 					NSLog(@"savedDevices = %@", savedDevices);
-					
+#else
 					// the sandbox also thwarts attempts to read the data from the shell command
 					// $ defaults read com.apple.dt.XCode DVTSavediPhoneDevices
 					NSTask *task = [NSTask new];
@@ -100,6 +102,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					NSData *pipeData = [[[task standardOutput] fileHandleForReading] readDataToEndOfFile];
 					NSString *pipeString = [[NSString alloc] initWithData:pipeData encoding:NSUTF8StringEncoding];
 					NSLog(@"pipeString = %@", pipeString);
+#endif
 #endif
 
 					NSURL *htmlURL = [[NSBundle bundleWithIdentifier:@"com.iconfactory.Provisioning"] URLForResource:@"template" withExtension:@"html"];

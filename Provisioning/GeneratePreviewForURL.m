@@ -315,7 +315,47 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					if (! value) {
 						[synthesizedInfo setObject:@"<em>App name not available</em>" forKey:@"AppIDName"];
 					}
+                    
+                    
+                    
+                    // Determine the profile type
+                    BOOL getTaskAllow = NO;
+                    value = [propertyList objectForKey:@"Entitlements"];
+					if ([value isKindOfClass:[NSDictionary class]]) {
+						NSDictionary *dictionary = (NSDictionary *)value;
+                        getTaskAllow = [[dictionary valueForKey:@"get-task-allow"] boolValue];
+                    }
 					
+                    BOOL hasDevices = NO;
+                    value = [propertyList objectForKey:@"ProvisionedDevices"];
+					if ([value isKindOfClass:[NSArray class]]) {
+                        hasDevices = YES;
+                    }
+                    
+                    BOOL isEnterprise = [[propertyList objectForKey:@"ProvisionsAllDevices"] boolValue];
+                    
+                    if ([[URL.absoluteString pathExtension] isEqualToString:@"mobileprovision"]) {
+                        if (hasDevices) {
+                            if (getTaskAllow) {
+                                [synthesizedInfo setObject:@"iOS Development" forKey:@"ProfileType"];
+                            } else {
+                                [synthesizedInfo setObject:@"iOS Ad Hoc" forKey:@"ProfileType"];
+                            }
+                        } else {
+                            if (isEnterprise) {
+                                [synthesizedInfo setObject:@"iOS Enterprise" forKey:@"ProfileType"];
+                            } else {
+                                [synthesizedInfo setObject:@"iOS App Store" forKey:@"ProfileType"];
+                            }
+                        }
+                    } else {
+                        if (hasDevices) {
+                            [synthesizedInfo setObject:@"Mac Development" forKey:@"ProfileType"];
+                        } else {
+                            [synthesizedInfo setObject:@"Mac App Store" forKey:@"ProfileType"];
+                        }
+                    }
+                    
 					for (NSString *key in [synthesizedInfo allKeys]) {
 						NSString *replacementValue = [synthesizedInfo objectForKey:key];
 						NSString *replacementToken = [NSString stringWithFormat:@"__%@__", key];

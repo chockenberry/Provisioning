@@ -315,7 +315,57 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					if (! value) {
 						[synthesizedInfo setObject:@"<em>App name not available</em>" forKey:@"AppIDName"];
 					}
+                    
+                    // determine the profile type
+                    BOOL getTaskAllow = NO;
+                    value = [propertyList objectForKey:@"Entitlements"];
+					if ([value isKindOfClass:[NSDictionary class]]) {
+						NSDictionary *dictionary = (NSDictionary *)value;
+                        getTaskAllow = [[dictionary valueForKey:@"get-task-allow"] boolValue];
+                    }
 					
+                    BOOL hasDevices = NO;
+                    value = [propertyList objectForKey:@"ProvisionedDevices"];
+					if ([value isKindOfClass:[NSArray class]]) {
+                        hasDevices = YES;
+                    }
+                    
+                    BOOL isEnterprise = [[propertyList objectForKey:@"ProvisionsAllDevices"] boolValue];
+                    
+                    if ([[URL.absoluteString pathExtension] isEqualToString:@"mobileprovision"]) {
+						[synthesizedInfo setObject:@"ios" forKey:@"Platform"];
+						
+						[synthesizedInfo setObject:@"iOS" forKey:@"ProfilePlatform"];
+                        if (hasDevices) {
+                            if (getTaskAllow) {
+                                [synthesizedInfo setObject:@"Development" forKey:@"ProfileType"];
+                            }
+							else {
+                                [synthesizedInfo setObject:@"Distribution (Ad Hoc)" forKey:@"ProfileType"];
+                            }
+                        }
+						else {
+                            if (isEnterprise) {
+                                [synthesizedInfo setObject:@"Enterprise" forKey:@"ProfileType"];
+                            }
+							else {
+                                [synthesizedInfo setObject:@"Distribution (App Store)" forKey:@"ProfileType"];
+                            }
+                        }
+                    }
+					else {
+						[synthesizedInfo setObject:@"mac" forKey:@"Platform"];
+						
+						[synthesizedInfo setObject:@"Mac" forKey:@"ProfilePlatform"];
+                        if (hasDevices) {
+                            [synthesizedInfo setObject:@"Development" forKey:@"ProfileType"];
+                        }
+						else {
+                            [synthesizedInfo setObject:@"Distribution (App Store)" forKey:@"ProfileType"];
+                        }
+                    }
+					[synthesizedInfo setObject:@"mac" forKey:@"Platform"];
+                   
 					for (NSString *key in [synthesizedInfo allKeys]) {
 						NSString *replacementValue = [synthesizedInfo objectForKey:key];
 						NSString *replacementToken = [NSString stringWithFormat:@"__%@__", key];

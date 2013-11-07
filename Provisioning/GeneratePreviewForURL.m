@@ -131,7 +131,12 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						[synthesizedInfo setObject:synthesizedValue forKey:@"CreationDateFormatted"];
 
 						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:date toDate:[NSDate date] options:0];
-						synthesizedValue = [NSString stringWithFormat:@"Created %zd days ago", dateComponents.day];
+						if (dateComponents.day == 0) {
+							synthesizedValue = @"Created today";
+						}
+						else {
+							synthesizedValue = [NSString stringWithFormat:@"Created %zd day%s ago", dateComponents.day, (dateComponents.day == 1 ? "" : "s")];
+						}
 						[synthesizedInfo setObject:synthesizedValue forKey:@"CreationSummary"];
 					}
 					
@@ -142,12 +147,14 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						[synthesizedInfo setObject:synthesizedValue forKey:@"ExpirationDateFormatted"];
 						
 						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:[NSDate date] toDate:date options:0];
-						// TODO: if negative, show "Expired" instead...
-						if (dateComponents.day < 0) {
-							synthesizedValue = [NSString stringWithFormat:@"<span class='error'>Expired %zd days ago</span>", -dateComponents.day];
+						if (dateComponents.day == 0) {
+							synthesizedValue = @"<span class='error'>Expires today</span>";
+						}
+						else if (dateComponents.day < 0) {
+							synthesizedValue = [NSString stringWithFormat:@"<span class='error'>Expired %zd day%s ago</span>", -dateComponents.day, (dateComponents.day == -1 ? "" : "s")];
 						}
 						else if (dateComponents.day < 30) {
-							synthesizedValue = [NSString stringWithFormat:@"<span class='warning'>Expires in %zd days</span>", dateComponents.day];
+							synthesizedValue = [NSString stringWithFormat:@"<span class='warning'>Expires in %zd day%s</span>", dateComponents.day, (dateComponents.day == 1 ? "" : "s")];
 						}
 						else {
  							synthesizedValue = [NSString stringWithFormat:@"Expires in %zd days", dateComponents.day];
@@ -276,7 +283,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						synthesizedValue = [devices copy];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"ProvisionedDevicesFormatted"];
 						
-						synthesizedValue = [NSString stringWithFormat:@"%zd Devices", [array count]];
+						synthesizedValue = [NSString stringWithFormat:@"%zd Device%s", [array count], ([array count] == 1 ? "" : "s")];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"ProvisionedDevicesCount"];
 					}
 					else {
@@ -315,7 +322,56 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					if (! value) {
 						[synthesizedInfo setObject:@"<em>App name not available</em>" forKey:@"AppIDName"];
 					}
+                    
+                    // determine the profile type
+                    BOOL getTaskAllow = NO;
+                    value = [propertyList objectForKey:@"Entitlements"];
+					if ([value isKindOfClass:[NSDictionary class]]) {
+						NSDictionary *dictionary = (NSDictionary *)value;
+                        getTaskAllow = [[dictionary valueForKey:@"get-task-allow"] boolValue];
+                    }
 					
+                    BOOL hasDevices = NO;
+                    value = [propertyList objectForKey:@"ProvisionedDevices"];
+					if ([value isKindOfClass:[NSArray class]]) {
+                        hasDevices = YES;
+                    }
+                    
+                    BOOL isEnterprise = [[propertyList objectForKey:@"ProvisionsAllDevices"] boolValue];
+                    
+                    if ([[URL.absoluteString pathExtension] isEqualToString:@"provisionprofile"]) {
+						[synthesizedInfo setObject:@"mac" forKey:@"Platform"];
+						
+						[synthesizedInfo setObject:@"Mac" forKey:@"ProfilePlatform"];
+                        if (hasDevices) {
+                            [synthesizedInfo setObject:@"Development" forKey:@"ProfileType"];
+                        }
+						else {
+                            [synthesizedInfo setObject:@"Distribution (App Store)" forKey:@"ProfileType"];
+                        }
+                    }
+					else {
+						[synthesizedInfo setObject:@"ios" forKey:@"Platform"];
+						
+						[synthesizedInfo setObject:@"iOS" forKey:@"ProfilePlatform"];
+                        if (hasDevices) {
+                            if (getTaskAllow) {
+                                [synthesizedInfo setObject:@"Development" forKey:@"ProfileType"];
+                            }
+							else {
+                                [synthesizedInfo setObject:@"Distribution (Ad Hoc)" forKey:@"ProfileType"];
+                            }
+                        }
+						else {
+                            if (isEnterprise) {
+                                [synthesizedInfo setObject:@"Enterprise" forKey:@"ProfileType"];
+                            }
+							else {
+                                [synthesizedInfo setObject:@"Distribution (App Store)" forKey:@"ProfileType"];
+                            }
+                        }
+                    }
+                   
 					for (NSString *key in [synthesizedInfo allKeys]) {
 						NSString *replacementValue = [synthesizedInfo objectForKey:key];
 						NSString *replacementToken = [NSString stringWithFormat:@"__%@__", key];

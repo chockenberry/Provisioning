@@ -131,7 +131,12 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						[synthesizedInfo setObject:synthesizedValue forKey:@"CreationDateFormatted"];
 
 						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:date toDate:[NSDate date] options:0];
-						synthesizedValue = [NSString stringWithFormat:@"Created %zd days ago", dateComponents.day];
+						if (dateComponents.day == 0) {
+							synthesizedValue = @"Created today";
+						}
+						else {
+							synthesizedValue = [NSString stringWithFormat:@"Created %zd day%s ago", dateComponents.day, (dateComponents.day == 1 ? "" : "s")];
+						}
 						[synthesizedInfo setObject:synthesizedValue forKey:@"CreationSummary"];
 					}
 					
@@ -142,12 +147,14 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						[synthesizedInfo setObject:synthesizedValue forKey:@"ExpirationDateFormatted"];
 						
 						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:[NSDate date] toDate:date options:0];
-						// TODO: if negative, show "Expired" instead...
-						if (dateComponents.day < 0) {
-							synthesizedValue = [NSString stringWithFormat:@"<span class='error'>Expired %zd days ago</span>", -dateComponents.day];
+						if (dateComponents.day == 0) {
+							synthesizedValue = @"<span class='error'>Expires today</span>";
+						}
+						else if (dateComponents.day < 0) {
+							synthesizedValue = [NSString stringWithFormat:@"<span class='error'>Expired %zd day%s ago</span>", -dateComponents.day, (dateComponents.day == -1 ? "" : "s")];
 						}
 						else if (dateComponents.day < 30) {
-							synthesizedValue = [NSString stringWithFormat:@"<span class='warning'>Expires in %zd days</span>", dateComponents.day];
+							synthesizedValue = [NSString stringWithFormat:@"<span class='warning'>Expires in %zd day%s</span>", dateComponents.day, (dateComponents.day == 1 ? "" : "s")];
 						}
 						else {
  							synthesizedValue = [NSString stringWithFormat:@"Expires in %zd days", dateComponents.day];

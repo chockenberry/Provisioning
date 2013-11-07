@@ -83,6 +83,12 @@
 		div#provision_info > div.header {
 			font-weight: bold;
 		}
+		div#provision_info > div.section#creation {
+			padding-bottom: 0.1em;
+		}
+		div#provision_info > div.section#expiration {
+			padding-top: 0.1em;
+		}
 		div#provision_info > div.header > div.label {
 			font-weight: bold;
 			float: left;
@@ -165,10 +171,6 @@
 				<div class="label" id="name">__Name__</div>
 				<div class="detail" id="uuid">__UUID__</div>
 			</div>
-			<div class="section" id="profile_type">
-				<div class="item" id="profile_type_label">__ProfilePlatform__ __ProfileType__</div>
-				<div class="detail" id="profile_type_description">Check <a href="https://developer.apple.com/account/__Platform__/profile/profileList.action">Provisioning Profiles in Dev Center</a></div>
-			</div>
 			<div class="section" id="creation">
 				<div class="item" id="creation_summary">__CreationSummary__</div>
 				<div class="detail" id="creation_date">__CreationDateFormatted__</div>
@@ -176,6 +178,11 @@
 			<div class="section" id="expiration">
 				<div class="item" id="expiration_summary">__ExpirationSummary__</div>
 				<div class="detail" id="expiration_date">__ExpirationDateFormatted__</div>
+			</div>
+			<div class="section" id="type">
+				<div class="label">Profile Type</div>
+				<div class="item" id="profile_type_label">__ProfilePlatform__ __ProfileType__</div>
+				<div class="detail" id="profile_type_description">Check <a href="https://developer.apple.com/account/__Platform__/profile/profileList.action">Provisioning Profiles in Dev Center</a></div>
 			</div>
 			<div class="section" id="team">
 				<div class="label">Team Name and ID</div>

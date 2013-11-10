@@ -67,8 +67,35 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 {
     @autoreleasepool {
         NSURL *URL = (__bridge NSURL *)url;
+		
+		NSData *fileData = nil;
+		if ([[URL pathExtension] isEqualToString:@"app"]) {
+			// get the embedded provisioning for the iOS app
+			fileData = [NSData dataWithContentsOfURL:[URL URLByAppendingPathComponent:@"embedded.mobileprovision"]];
+		}
+		else if ([[URL pathExtension] isEqualToString:@"ipa"]) {
+			// $ unzip /path/to/Application.ipa 'Payload/*.app/embedded.mobileprovision' -d /tmp/com.iconfactory.Provisioning
+			NSTask *unzipTask = [NSTask new];
+			[unzipTask setLaunchPath:@"/usr/bin/unzip"];
+			[unzipTask setArguments:@[ @"-o", [URL path], @"Payload/*.app/embedded.mobileprovision", @"-d", @"/tmp/com.iconfactory.Provisioning" ]];
+			[unzipTask launch];
+			[unzipTask waitUntilExit];
+			
+			// get the embedded provisioning from the iOS app archive
+			NSFileManager *fileManager = [NSFileManager defaultManager];
+			NSArray *files = [fileManager contentsOfDirectoryAtPath:@"/tmp/com.iconfactory.Provisioning/Payload" error:NULL];
+			if (files && [files count] > 0) {
+				NSString *filePath = [[@"/tmp/com.iconfactory.Provisioning/Payload" stringByAppendingPathComponent:[files firstObject]] stringByAppendingPathComponent:@"embedded.mobileprovision"];
+				fileData = [NSData dataWithContentsOfFile:filePath];
+			}
 
-		NSData *fileData = [NSData dataWithContentsOfURL:URL];
+			[fileManager removeItemAtPath:@"/tmp/com.iconfactory.Provisioning" error:NULL];
+		}
+		else {
+			// get the provisioning directly from the file
+			fileData = [NSData dataWithContentsOfURL:URL];
+		}
+
 		if (fileData) {
 			CMSDecoderRef decoder = NULL;
 			CMSDecoderCreate(&decoder);

@@ -60,12 +60,14 @@ void displayKeyAndValue(NSUInteger level, NSString *key, id value, NSMutableStri
 	}
 }
 
-// all code in Mavericks needs to be signed, so we don't get some nice features...  
+// all code in Mavericks needs to be signed, so we don't get some nice features...
 #define SIGNED_CODE 1
 
 OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options)
 {
     @autoreleasepool {
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+
         NSURL *URL = (__bridge NSURL *)url;
 		
 		NSData *fileData = nil;
@@ -82,7 +84,6 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			[unzipTask waitUntilExit];
 			
 			// get the embedded provisioning from the iOS app archive
-			NSFileManager *fileManager = [NSFileManager defaultManager];
 			NSArray *files = [fileManager contentsOfDirectoryAtPath:@"/tmp/com.iconfactory.Provisioning/Payload" error:NULL];
 			if (files && [files count] > 0) {
 				NSString *filePath = [[@"/tmp/com.iconfactory.Provisioning/Payload" stringByAppendingPathComponent:[files firstObject]] stringByAppendingPathComponent:@"embedded.mobileprovision"];
@@ -398,7 +399,49 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
                             }
                         }
                     }
-                   
+
+					{
+						[synthesizedInfo setObject:[URL lastPathComponent] forKey:@"FileName"];
+
+						if ([[URL pathExtension] isEqualToString:@"app"]) {
+							// get the "file" information using the application package folder
+							NSString *folderPath = [URL path];
+							
+							NSDictionary *folderAttributes = [fileManager attributesOfItemAtPath:folderPath error:NULL];
+							if (folderAttributes) {
+								NSDate *folderModificationDate = [folderAttributes fileModificationDate];
+							
+								unsigned long long folderSize = 0;
+								NSArray *filesArray = [fileManager subpathsOfDirectoryAtPath:folderPath error:nil];
+								for (NSString *fileName in filesArray) {
+									NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:[folderPath stringByAppendingPathComponent:fileName] error:NULL];
+									if (fileAttributes)
+									folderSize += [fileAttributes fileSize];
+								}
+
+								synthesizedValue = [NSString stringWithFormat:@"%@, Modified %@",
+										[NSByteCountFormatter stringFromByteCount:folderSize countStyle:NSByteCountFormatterCountStyleFile],
+										[dateFormatter stringFromDate:folderModificationDate]];
+								[synthesizedInfo setObject:synthesizedValue forKey:@"FileInfo"];
+							}
+							else {
+								[synthesizedInfo setObject:@"" forKey:@"FileInfo"];
+							}
+						}
+						else {
+							NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:[URL path] error:NULL];
+							if (fileAttributes) {
+								NSDate *fileModificationDate = [fileAttributes fileModificationDate];
+								unsigned long long fileSize = [fileAttributes fileSize];
+								
+								synthesizedValue = [NSString stringWithFormat:@"%@, Modified %@",
+													[NSByteCountFormatter stringFromByteCount:fileSize countStyle:NSByteCountFormatterCountStyleFile],
+													[dateFormatter stringFromDate:fileModificationDate]];
+								[synthesizedInfo setObject:synthesizedValue forKey:@"FileInfo"];
+							}
+						}
+					}
+ 
 					for (NSString *key in [synthesizedInfo allKeys]) {
 						NSString *replacementValue = [synthesizedInfo objectForKey:key];
 						NSString *replacementToken = [NSString stringWithFormat:@"__%@__", key];

@@ -68,7 +68,10 @@
 		}
 		div.data > table > tbody > tr > td {
 			margin: 0em;
-			padding: 0.25em;
+			padding: 0.25em 0.5em 0.25em 0.5em;
+		}
+		div.data > table > tbody > tr > td.divider {
+			border-left: 1px solid #aaa;
 		}
 		div.data > table > tbody > tr.even {
 			background-color: #ddd;
@@ -122,10 +125,11 @@
 			color: #daa520;
 		}
 
-		div.hidden {
-			display: none;
+		div#provision_info > div.debug  {
+			color:red;
 		}
 		
+		div.container
 /*
 		div.label {
 			outline: 1px solid purple;
@@ -171,7 +175,7 @@
 	</head>
 	<body>
 		<div class="container" id="provision_info">
-			<div class="header">
+			<div class="header __DEBUG__">
 				<div class="label" id="name">__Name__</div>
 				<div class="detail" id="uuid">__UUID__</div>
 			</div>

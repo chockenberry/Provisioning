@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "44707D5D1820208F0005B2C6"
-               BuildableName = "Provisioning.qlgenerator"
-               BlueprintName = "Provisioning"
+               BlueprintIdentifier = "44F2D85A1831703C0021747D"
+               BuildableName = "Provisioning (Install)"
+               BlueprintName = "Provisioning (Install)"
                ReferencedContainer = "container:Provisioning.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,7 +45,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-p &quot;~/Library/MobileDevice/Provisioning\ Profiles/Iconfactory_Development.mobileprovision&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-p &quot;~/Library/MobileDevice/Provisioning\ Profiles/Iconfactory_Distribution.mobileprovision&quot;"
@@ -57,7 +57,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-p &quot;~/Desktop/Provision\ Testing/Warbler.ipa&quot;"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>

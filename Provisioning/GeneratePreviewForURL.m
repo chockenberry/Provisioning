@@ -6,6 +6,11 @@
 #import <Cocoa/Cocoa.h>
 #import <Security/Security.h>
 
+
+// all code in Mavericks should be signed, but it's really broken... need to submit Radars!
+#define SIGNED_CODE 0
+
+
 OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options);
 void CancelPreviewGeneration(void *thisInterface, QLPreviewRequestRef preview);
 
@@ -60,14 +65,11 @@ void displayKeyAndValue(NSUInteger level, NSString *key, id value, NSMutableStri
 	}
 }
 
-// all code in Mavericks needs to be signed, so we don't get some nice features...
-#define SIGNED_CODE 1
-
 OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options)
 {
     @autoreleasepool {
 		NSFileManager *fileManager = [NSFileManager defaultManager];
-
+		
         NSURL *URL = (__bridge NSURL *)url;
 		
 		NSData *fileData = nil;
@@ -76,21 +78,27 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			fileData = [NSData dataWithContentsOfURL:[URL URLByAppendingPathComponent:@"embedded.mobileprovision"]];
 		}
 		else if ([[URL pathExtension] isEqualToString:@"ipa"]) {
-			// $ unzip /path/to/Application.ipa 'Payload/*.app/embedded.mobileprovision' -d /tmp/com.iconfactory.Provisioning
+#if !SIGNED_CODE
+			//NSString *unzipFolder = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"com.iconfactory.Provisioning"];
+			NSString *unzipFolder = @"/tmp/com.iconfactory.Provisioning";
+
+			// $ unzip /path/to/Application.ipa 'Payload/*.app/embedded.mobileprovision' -d /path/to/unzipFolder
 			NSTask *unzipTask = [NSTask new];
 			[unzipTask setLaunchPath:@"/usr/bin/unzip"];
-			[unzipTask setArguments:@[ @"-o", [URL path], @"Payload/*.app/embedded.mobileprovision", @"-d", @"/tmp/com.iconfactory.Provisioning" ]];
+			[unzipTask setArguments:@[ @"-o", [URL path], @"Payload/*.app/embedded.mobileprovision", @"-d", unzipFolder ]];
 			[unzipTask launch];
 			[unzipTask waitUntilExit];
 			
 			// get the embedded provisioning from the iOS app archive
-			NSArray *files = [fileManager contentsOfDirectoryAtPath:@"/tmp/com.iconfactory.Provisioning/Payload" error:NULL];
+			NSString *payloadFolder = [unzipFolder stringByAppendingPathComponent:@"Payload"];
+			NSArray *files = [fileManager contentsOfDirectoryAtPath:payloadFolder error:NULL];
 			if (files && [files count] > 0) {
-				NSString *filePath = [[@"/tmp/com.iconfactory.Provisioning/Payload" stringByAppendingPathComponent:[files firstObject]] stringByAppendingPathComponent:@"embedded.mobileprovision"];
+				NSString *filePath = [[payloadFolder stringByAppendingPathComponent:[files firstObject]] stringByAppendingPathComponent:@"embedded.mobileprovision"];
 				fileData = [NSData dataWithContentsOfFile:filePath];
 			}
 
-			[fileManager removeItemAtPath:@"/tmp/com.iconfactory.Provisioning" error:NULL];
+			[fileManager removeItemAtPath:unzipFolder error:NULL];
+#endif
 		}
 		else {
 			// get the provisioning directly from the file
@@ -117,7 +125,6 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					NSUserDefaults *xcodeDefaults = [NSUserDefaults new];
 					[xcodeDefaults addSuiteNamed:@"com.apple.dt.XCode"];
 					NSArray *savedDevices = [xcodeDefaults objectForKey:@"DVTSavediPhoneDevices"];
-					NSLog(@"savedDevices = %@", savedDevices);
 #else
 					// the sandbox also thwarts attempts to read the data from the shell command
 					// $ defaults read com.apple.dt.XCode DVTSavediPhoneDevices
@@ -300,7 +307,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 								}
 							}
 							
-							[devices appendFormat:@"<tr class='%s'><td>%@</td><td>%@</td><td>%@</td><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), displayPrefix, device, deviceName, deviceSoftwareVerson];
+							[devices appendFormat:@"<tr class='%s'><td>%@</td><td class='divider'>%@</td><td class='divider'>%@</td><td class='divider'>%@</td></tr>\n", (evenRow ? "even" : "odd"), displayPrefix, device, deviceName, deviceSoftwareVerson];
 #else
 							[devices appendFormat:@"<tr class='%s'><td>%@</td><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), displayPrefix, device];
 #endif
@@ -441,7 +448,13 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 							}
 						}
 					}
- 
+
+#ifdef DEBUG
+					[synthesizedInfo setObject:@"debug" forKey:@"DEBUG"];
+#else
+					[synthesizedInfo setObject:@"" forKey:@"DEBUG"];
+#endif
+
 					for (NSString *key in [synthesizedInfo allKeys]) {
 						NSString *replacementValue = [synthesizedInfo objectForKey:key];
 						NSString *replacementToken = [NSString stringWithFormat:@"__%@__", key];
@@ -455,6 +468,9 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					QLPreviewRequestSetDataRepresentation(preview, (__bridge CFDataRef)[html dataUsingEncoding:NSUTF8StringEncoding], kUTTypeHTML, (__bridge CFDictionaryRef)properties);
 				}
 			}
+		}
+		else {
+			NSLog(@"No file data for %@", URL);
 		}
 	}
 	

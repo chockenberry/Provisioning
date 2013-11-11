@@ -6,6 +6,21 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		44F2D85A1831703C0021747D /* Provisioning (Install) */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 44F2D85B1831703C0021747D /* Build configuration list for PBXAggregateTarget "Provisioning (Install)" */;
+			buildPhases = (
+				44F2D864183170CF0021747D /* Install Quick Look plug-in */,
+			);
+			dependencies = (
+				44105DC718317CD600760FE2 /* PBXTargetDependency */,
+			);
+			name = "Provisioning (Install)";
+			productName = "Provisioning (Install)";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		44707D621820208F0005B2C6 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44707D611820208F0005B2C6 /* QuickLook.framework */; };
 		44707D641820208F0005B2C6 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44707D631820208F0005B2C6 /* ApplicationServices.framework */; };
@@ -17,24 +32,19 @@
 		44707D741820208F0005B2C6 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 44707D731820208F0005B2C6 /* main.c */; };
 		44707D7C1820219E0005B2C6 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44707D7B1820219E0005B2C6 /* AppKit.framework */; };
 		44707D7E182021A90005B2C6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44707D7D182021A90005B2C6 /* Security.framework */; };
-		44707D80182023760005B2C6 /* Provisioning.qlgenerator in Copy Plug-in to ~/Library/QuickLook */ = {isa = PBXBuildFile; fileRef = 44707D5E1820208F0005B2C6 /* Provisioning.qlgenerator */; };
 		44707D8418205A7C0005B2C6 /* template.html in Resources */ = {isa = PBXBuildFile; fileRef = 44707D8318205A7C0005B2C6 /* template.html */; };
 		44707DC61823198A0005B2C6 /* Read Me.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 44707DC51823198A0005B2C6 /* Read Me.rtf */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		44707D7F1820234F0005B2C6 /* Copy Plug-in to ~/Library/QuickLook */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "~/Library/QuickLook";
-			dstSubfolderSpec = 0;
-			files = (
-				44707D80182023760005B2C6 /* Provisioning.qlgenerator in Copy Plug-in to ~/Library/QuickLook */,
-			);
-			name = "Copy Plug-in to ~/Library/QuickLook";
-			runOnlyForDeploymentPostprocessing = 0;
+/* Begin PBXContainerItemProxy section */
+		44105DC618317CD600760FE2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 44707D541820208F0005B2C6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 44707D5D1820208F0005B2C6;
+			remoteInfo = Provisioning;
 		};
-/* End PBXCopyFilesBuildPhase section */
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		44707D5E1820208F0005B2C6 /* Provisioning.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Provisioning.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,7 +158,6 @@
 				44707D5A1820208F0005B2C6 /* Headers */,
 				44707D5B1820208F0005B2C6 /* Resources */,
 				44707D5C1820208F0005B2C6 /* Rez */,
-				44707D7F1820234F0005B2C6 /* Copy Plug-in to ~/Library/QuickLook */,
 			);
 			buildRules = (
 			);
@@ -181,6 +190,7 @@
 			projectRoot = "";
 			targets = (
 				44707D5D1820208F0005B2C6 /* Provisioning */,
+				44F2D85A1831703C0021747D /* Provisioning (Install) */,
 			);
 		};
 /* End PBXProject section */
@@ -208,6 +218,23 @@
 		};
 /* End PBXRezBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		44F2D864183170CF0021747D /* Install Quick Look plug-in */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Install Quick Look plug-in";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"Copying $BUILT_PRODUCTS_DIR/Provisioning.qlgenerator to QuickLook folder...\"\n\nGENERATOR=\"Provisioning.qlgenerator\"\n\nrm -rf ~/Library/QuickLook/$GENERATOR\nqlmanage -r\n\ncp -R \"$BUILT_PRODUCTS_DIR/$GENERATOR\" ~/Library/QuickLook/\nqlmanage -r\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		44707D581820208F0005B2C6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -220,6 +247,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		44105DC718317CD600760FE2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 44707D5D1820208F0005B2C6 /* Provisioning */;
+			targetProxy = 44105DC618317CD600760FE2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		44707D6C1820208F0005B2C6 /* InfoPlist.strings */ = {
@@ -248,7 +283,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -267,6 +302,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DDEBUG";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -286,7 +322,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -329,6 +365,20 @@
 			};
 			name = Release;
 		};
+		44F2D85C1831703C0021747D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		44F2D85D1831703C0021747D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -346,6 +396,15 @@
 			buildConfigurations = (
 				44707D791820208F0005B2C6 /* Debug */,
 				44707D7A1820208F0005B2C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		44F2D85B1831703C0021747D /* Build configuration list for PBXAggregateTarget "Provisioning (Install)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44F2D85C1831703C0021747D /* Debug */,
+				44F2D85D1831703C0021747D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

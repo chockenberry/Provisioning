@@ -19,6 +19,18 @@
 			name = "Provisioning (Install)";
 			productName = "Provisioning (Install)";
 		};
+		44FB5C3C1831C6B500AD6BC6 /* Distribution_GitHub */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 44FB5C3F1831C6B500AD6BC6 /* Build configuration list for PBXAggregateTarget "Distribution_GitHub" */;
+			buildPhases = (
+				44FB5C421831C6CA00AD6BC6 /* Package Release */,
+			);
+			dependencies = (
+				44FB5C411831C6BF00AD6BC6 /* PBXTargetDependency */,
+			);
+			name = Distribution_GitHub;
+			productName = "Provisioning (Release)";
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
@@ -38,6 +50,13 @@
 
 /* Begin PBXContainerItemProxy section */
 		44105DC618317CD600760FE2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 44707D541820208F0005B2C6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 44707D5D1820208F0005B2C6;
+			remoteInfo = Provisioning;
+		};
+		44FB5C401831C6BF00AD6BC6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 44707D541820208F0005B2C6 /* Project object */;
 			proxyType = 1;
@@ -191,6 +210,7 @@
 			targets = (
 				44707D5D1820208F0005B2C6 /* Provisioning */,
 				44F2D85A1831703C0021747D /* Provisioning (Install) */,
+				44FB5C3C1831C6B500AD6BC6 /* Distribution_GitHub */,
 			);
 		};
 /* End PBXProject section */
@@ -233,6 +253,20 @@
 			shellPath = /bin/sh;
 			shellScript = "echo \"Copying $BUILT_PRODUCTS_DIR/Provisioning.qlgenerator to QuickLook folder...\"\n\nGENERATOR=\"Provisioning.qlgenerator\"\n\nrm -rf ~/Library/QuickLook/$GENERATOR\nqlmanage -r\n\ncp -R \"$BUILT_PRODUCTS_DIR/$GENERATOR\" ~/Library/QuickLook/\nqlmanage -r\n";
 		};
+		44FB5C421831C6CA00AD6BC6 /* Package Release */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Package Release";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -o errexit\n\n[ $CONFIGURATION = Release ] || { echo Distribution target requires \"'Release'\" configuration; false; }\n\nPRODUCT=\"$PRODUCT_NAME.qlgenerator\"\nVERSION=$(defaults read \"$BUILT_PRODUCTS_DIR/$PRODUCT/Contents/Info\" CFBundleVersion)\n\nARCHIVE_FILENAME=\"$PRODUCT_NAME-$VERSION.zip\"\nARCHIVE_FOLDER=\"$PRODUCT_NAME-$VERSION\"\n\nWD=$PWD\ncd \"$BUILT_PRODUCTS_DIR\"\nmkdir \"$ARCHIVE_FOLDER\"\ncp \"$PROJECT_DIR/Read Me.rtf\" \"$ARCHIVE_FOLDER\"\ncp -R \"$PRODUCT\" \"$ARCHIVE_FOLDER\"\n\nrm -f \"$PRODUCT_NAME\"*.zip\nditto -ck --keepParent \"$ARCHIVE_FOLDER\" \"$ARCHIVE_FILENAME\"\n\nrm -rf \"$ARCHIVE_FOLDER\"\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -253,6 +287,11 @@
 			isa = PBXTargetDependency;
 			target = 44707D5D1820208F0005B2C6 /* Provisioning */;
 			targetProxy = 44105DC618317CD600760FE2 /* PBXContainerItemProxy */;
+		};
+		44FB5C411831C6BF00AD6BC6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 44707D5D1820208F0005B2C6 /* Provisioning */;
+			targetProxy = 44FB5C401831C6BF00AD6BC6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -379,6 +418,20 @@
 			};
 			name = Release;
 		};
+		44FB5C3D1831C6B500AD6BC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = Provisioning;
+			};
+			name = Debug;
+		};
+		44FB5C3E1831C6B500AD6BC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = Provisioning;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -408,6 +461,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		44FB5C3F1831C6B500AD6BC6 /* Build configuration list for PBXAggregateTarget "Distribution_GitHub" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44FB5C3D1831C6B500AD6BC6 /* Debug */,
+				44FB5C3E1831C6B500AD6BC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

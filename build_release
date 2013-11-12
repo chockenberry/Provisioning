@@ -1,0 +1,34 @@
+#!/bin/sh
+
+current_tools=`xcode-select -print-path`
+build_tools="/Applications/Xcode.app/Contents/Developer"
+
+switch=0
+if [ "$current_tools" != "$build_tools" ]; then
+	switch=1
+fi
+
+if [ $switch -ne 0 ]; then
+	echo "Switching from $current_tools to $build_tools..."
+	sudo xcode-select -switch "$build_tools"
+else
+	echo "Using $build_tools..."
+fi
+
+configuration="Release"
+
+
+target="Distribution_GitHub"
+
+xcodebuild \
+	-configuration "$configuration" \
+	-target "$target" \
+	clean build | tee /tmp/xcodebuild_github.out
+
+echo "=========================================================="
+echo "Warnings"
+echo "----------------------------------------------------------"
+grep -i "warning:" /tmp/xcodebuild_github.out
+grep -i "note:" /tmp/xcodebuild_github.out
+echo "=========================================================="
+

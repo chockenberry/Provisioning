@@ -7,7 +7,7 @@
 #import <Security/Security.h>
 
 
-// all code in Mavericks should be signed, but it's really broken... need to submit Radars!
+// all code in Mavericks should be signed, but it's really broken...  http://www.openradar.me/15444624
 #define SIGNED_CODE 0
 
 

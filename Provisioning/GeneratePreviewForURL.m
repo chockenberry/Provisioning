@@ -348,10 +348,14 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						[synthesizedInfo setObject:synthesizedValue forKey:@"BundleVersion"];
 					}
 
-					// older provisioning files don't include TeamName or AppIDName keys
+					// older provisioning files don't include some key/value pairs
 					value = [propertyList objectForKey:@"TeamName"];
 					if (! value) {
 						[synthesizedInfo setObject:@"<em>Team name not available</em>" forKey:@"TeamName"];
+					}
+					value = [propertyList objectForKey:@"TeamIdentifier"];
+					if (! value) {
+						[synthesizedInfo setObject:@"<em>Team ID not available</em>" forKey:@"TeamIds"];
 					}
 					value = [propertyList objectForKey:@"AppIDName"];
 					if (! value) {

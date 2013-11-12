@@ -78,11 +78,14 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			fileData = [NSData dataWithContentsOfURL:[URL URLByAppendingPathComponent:@"embedded.mobileprovision"]];
 		}
 		else if ([[URL pathExtension] isEqualToString:@"ipa"]) {
-#if !SIGNED_CODE
-			//NSString *unzipFolder = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"com.iconfactory.Provisioning"];
-			NSString *unzipFolder = @"/tmp/com.iconfactory.Provisioning";
-
+#if 0
+			// NOTE: This technique won't work with signed code since it relies on the ability to write to the filesystem, which per Radar #15444624, won't work.
+			
 			// $ unzip /path/to/Application.ipa 'Payload/*.app/embedded.mobileprovision' -d /path/to/unzipFolder
+
+			NSString *unzipFolder = @"/tmp/com.iconfactory.Provisioning";
+			//NSString *unzipFolder = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"com.iconfactory.Provisioning"];
+
 			NSTask *unzipTask = [NSTask new];
 			[unzipTask setLaunchPath:@"/usr/bin/unzip"];
 			[unzipTask setArguments:@[ @"-o", [URL path], @"Payload/*.app/embedded.mobileprovision", @"-d", unzipFolder ]];
@@ -98,6 +101,18 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			}
 
 			[fileManager removeItemAtPath:unzipFolder error:NULL];
+#else
+			// NOTE: This technique works with signed code since it only relies on the ability to read the filesystem and write to standard output.
+			
+			// $ unzip -p /path/to/Application.ipa 'Payload/*.app/embedded.mobileprovision' (piped to standard output)
+			NSTask *unzipTask = [NSTask new];
+			[unzipTask setLaunchPath:@"/usr/bin/unzip"];
+			[unzipTask setStandardOutput:[NSPipe pipe]];
+			[unzipTask setArguments:@[@"-p", [URL path], @"Payload/*.app/embedded.mobileprovision" ]];
+			[unzipTask launch];
+			[unzipTask waitUntilExit];
+			
+			fileData = [[[unzipTask standardOutput] fileHandleForReading] readDataToEndOfFile];
 #endif
 		}
 		else {

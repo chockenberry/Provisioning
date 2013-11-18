@@ -242,25 +242,53 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 
 					value = [propertyList objectForKey:@"DeveloperCertificates"];
 					if ([value isKindOfClass:[NSArray class]]) {
-						NSMutableArray *summaries = [NSMutableArray array];
+                                                static NSString *const devCertSummaryKey = @"summary";
+                                                static NSString *const devCertInvalidityDateKey = @"invalidity";
+                                            
+                                                NSMutableArray *certificateDetails = [NSMutableArray array];
 						NSArray *array = (NSArray *)value;
 						for (NSData *data in array) {
 							SecCertificateRef certificateRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)data);
 							if (certificateRef) {
-								CFStringRef summaryRef = SecCertificateCopySubjectSummary(certificateRef);
-								NSString *summary = (NSString *)CFBridgingRelease(summaryRef);
-								[summaries addObject:summary];
+                                                                CFStringRef summaryRef = SecCertificateCopySubjectSummary(certificateRef);
+                                                                NSString *summary = (NSString *)CFBridgingRelease(summaryRef);
+                                                                NSMutableDictionary *detailsDict = [NSMutableDictionary dictionaryWithObject:summary forKey:devCertSummaryKey];
+                                                            
+                                                                CFErrorRef error;
+                                                                CFDictionaryRef valuesDict = SecCertificateCopyValues(certificateRef, (__bridge CFArrayRef)@[(__bridge id)kSecOIDInvalidityDate], &error);
+                                                            
+                                                                NSString *invalidityDate;
+                                                                if (valuesDict) {
+                                                                        NSDictionary *invalidityDateDict = (__bridge NSDictionary *)CFDictionaryGetValue(valuesDict, kSecOIDInvalidityDate);
+                                                                        invalidityDate = [invalidityDateDict valueForKey:(__bridge id)kSecPropertyKeyValue];
+                                                                        if (invalidityDate)
+                                                                                [detailsDict setObject:invalidityDate forKey:devCertInvalidityDateKey];
+                                                                        else
+                                                                                NSLog(@"No string value for invalidity date dictionary: %@", invalidityDateDict);
+                                                                    
+                                                                        CFRelease(valuesDict);
+                                                                } else {
+                                                                        NSLog(@"Could not get invalidity date for certificate '%@': %@", summary, error);
+                                                                }
+                                                            
+								[certificateDetails addObject:detailsDict];
 								CFRelease(certificateRef);
 							}
 						}
 
 						NSMutableString *certificates = [NSMutableString string];
-						[certificates appendString:@"<table>\n"];
+						[certificates appendString:@"<table><tr><th>Name</th><th>Invalidity Date</th></tr>\n"];
 						BOOL evenRow = NO;
-						for (NSString *summary in summaries) {
-							[certificates appendFormat:@"<tr class='%s'><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), summary];
-							evenRow = !evenRow;
-						}
+                                                NSArray *sortedCertificateDetails = [certificateDetails sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                                                        return [((NSDictionary *)obj1)[devCertSummaryKey] compare:((NSDictionary *)obj2)[devCertSummaryKey]];
+                                                }];
+                                            
+                                                for (NSDictionary *detailsDict in sortedCertificateDetails) {
+                                                        NSString *summary = detailsDict[devCertSummaryKey];
+                                                        NSString *invalidityDate = detailsDict[devCertInvalidityDateKey];
+                                                        [certificates appendFormat:@"<tr class='%s'><td>%@</td><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), summary ? summary : @"none", invalidityDate ? invalidityDate : @"(unknown)"];
+                                                        evenRow = !evenRow;
+                                                }
 						[certificates appendString:@"</table>\n"];
 						
 						synthesizedValue = [certificates copy];

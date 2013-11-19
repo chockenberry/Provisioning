@@ -52,6 +52,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-p &quot;~/Library/MobileDevice/Provisioning\ Profiles/Iconfactory_Beta.mobileprovision&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-p &quot;~/Desktop/Provision\ Testing/Twitterrific.app&quot;"
             isEnabled = "NO">
          </CommandLineArgument>

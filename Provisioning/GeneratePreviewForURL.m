@@ -65,6 +65,29 @@ void displayKeyAndValue(NSUInteger level, NSString *key, id value, NSMutableStri
 	}
 }
 
+NSString *expirationStringForDateInCalendar(NSDate *date, NSCalendar *calendar)
+{
+	NSString *result = nil;
+	
+	if (date) {
+		NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:[NSDate date] toDate:date options:0];
+		if (dateComponents.day == 0) {
+			result = @"<span class='error'>Expires today</span>";
+		}
+		else if (dateComponents.day < 0) {
+			result = [NSString stringWithFormat:@"<span class='error'>Expired %zd day%s ago</span>", -dateComponents.day, (dateComponents.day == -1 ? "" : "s")];
+		}
+		else if (dateComponents.day < 30) {
+			result = [NSString stringWithFormat:@"<span class='warning'>Expires in %zd day%s</span>", dateComponents.day, (dateComponents.day == 1 ? "" : "s")];
+		}
+		else {
+			result = [NSString stringWithFormat:@"Expires in %zd days", dateComponents.day];
+		}
+	}
+
+	return result;
+}
+
 OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options)
 {
     @autoreleasepool {
@@ -82,10 +105,10 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			// NOTE: This technique won't work with signed code since it relies on the ability to write to the filesystem, which per Radar #15444624, won't work.
 			
 			// $ unzip /path/to/Application.ipa 'Payload/*.app/embedded.mobileprovision' -d /path/to/unzipFolder
-
+			
 			NSString *unzipFolder = @"/tmp/com.iconfactory.Provisioning";
 			//NSString *unzipFolder = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"com.iconfactory.Provisioning"];
-
+			
 			NSTask *unzipTask = [NSTask new];
 			[unzipTask setLaunchPath:@"/usr/bin/unzip"];
 			[unzipTask setArguments:@[ @"-o", [URL path], @"Payload/*.app/embedded.mobileprovision", @"-d", unzipFolder ]];
@@ -99,7 +122,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 				NSString *filePath = [[payloadFolder stringByAppendingPathComponent:[files firstObject]] stringByAppendingPathComponent:@"embedded.mobileprovision"];
 				fileData = [NSData dataWithContentsOfFile:filePath];
 			}
-
+			
 			[fileManager removeItemAtPath:unzipFolder error:NULL];
 #else
 			// NOTE: This technique works with signed code since it only relies on the ability to read the filesystem and write to standard output.
@@ -119,7 +142,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			// get the provisioning directly from the file
 			fileData = [NSData dataWithContentsOfURL:URL];
 		}
-
+		
 		if (fileData) {
 			CMSDecoderRef decoder = NULL;
 			CMSDecoderCreate(&decoder);
@@ -133,7 +156,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			if (data) {
 				// check if the request was cancelled
 				if (! QLPreviewRequestIsCancelled(preview)) {
-
+					
 #if !SIGNED_CODE
 #if 1
 					// get the iOS devices that Xcode has seen, which only works if the plug-in is not running in a sandbox
@@ -154,10 +177,10 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					NSLog(@"pipeString = %@", pipeString);
 #endif
 #endif
-
+					
 					NSURL *htmlURL = [[NSBundle bundleWithIdentifier:@"com.iconfactory.Provisioning"] URLForResource:@"template" withExtension:@"html"];
 					NSMutableString *html = [NSMutableString stringWithContentsOfURL:htmlURL encoding:NSUTF8StringEncoding error:NULL];
-
+					
 					// use all keys and values in the property list to generate replacement tokens and values
 					NSDictionary *propertyList = [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:NULL];
 					for (NSString *key in [propertyList allKeys]) {
@@ -173,13 +196,13 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					NSDateFormatter *dateFormatter = [NSDateFormatter new];
 					[dateFormatter setDateFormat:@"EEEE',' MMMM d',' yyyy 'at' h:mm a"];
 					NSCalendar *calendar = [NSCalendar currentCalendar];
-
+					
 					value = [propertyList objectForKey:@"CreationDate"];
 					if ([value isKindOfClass:[NSDate class]]) {
 						NSDate *date = (NSDate *)value;
 						synthesizedValue = [dateFormatter stringFromDate:date];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"CreationDateFormatted"];
-
+						
 						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:date toDate:[NSDate date] options:0];
 						if (dateComponents.day == 0) {
 							synthesizedValue = @"Created today";
@@ -196,19 +219,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						synthesizedValue = [dateFormatter stringFromDate:date];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"ExpirationDateFormatted"];
 						
-						NSDateComponents *dateComponents = [calendar components:NSDayCalendarUnit fromDate:[NSDate date] toDate:date options:0];
-						if (dateComponents.day == 0) {
-							synthesizedValue = @"<span class='error'>Expires today</span>";
-						}
-						else if (dateComponents.day < 0) {
-							synthesizedValue = [NSString stringWithFormat:@"<span class='error'>Expired %zd day%s ago</span>", -dateComponents.day, (dateComponents.day == -1 ? "" : "s")];
-						}
-						else if (dateComponents.day < 30) {
-							synthesizedValue = [NSString stringWithFormat:@"<span class='warning'>Expires in %zd day%s</span>", dateComponents.day, (dateComponents.day == 1 ? "" : "s")];
-						}
-						else {
- 							synthesizedValue = [NSString stringWithFormat:@"Expires in %zd days", dateComponents.day];
-						}
+						synthesizedValue = expirationStringForDateInCalendar(date, calendar);
 						[synthesizedInfo setObject:synthesizedValue forKey:@"ExpirationSummary"];
 					}
 					
@@ -217,16 +228,16 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						NSArray *array = (NSArray *)value;
 						synthesizedValue = [array componentsJoinedByString:@", "];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"AppIds"];
-
+						
 					}
-
+					
 					value = [propertyList objectForKey:@"TeamIdentifier"];
 					if ([value isKindOfClass:[NSArray class]]) {
 						NSArray *array = (NSArray *)value;
 						synthesizedValue = [array componentsJoinedByString:@", "];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"TeamIds"];
 					}
-
+					
 					value = [propertyList objectForKey:@"Entitlements"];
 					if ([value isKindOfClass:[NSDictionary class]]) {
 						NSDictionary *dictionary = (NSDictionary *)value;
@@ -239,26 +250,88 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					else {
 						[synthesizedInfo setObject:@"No Entitlements" forKey:@"EntitlementsFormatted"];
 					}
-
+					
 					value = [propertyList objectForKey:@"DeveloperCertificates"];
 					if ([value isKindOfClass:[NSArray class]]) {
-						NSMutableArray *summaries = [NSMutableArray array];
+						static NSString *const devCertSummaryKey = @"summary";
+						static NSString *const devCertInvalidityDateKey = @"invalidity";
+						
+						NSMutableArray *certificateDetails = [NSMutableArray array];
 						NSArray *array = (NSArray *)value;
 						for (NSData *data in array) {
 							SecCertificateRef certificateRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)data);
 							if (certificateRef) {
 								CFStringRef summaryRef = SecCertificateCopySubjectSummary(certificateRef);
 								NSString *summary = (NSString *)CFBridgingRelease(summaryRef);
-								[summaries addObject:summary];
+								if (summary) {
+									NSMutableDictionary *detailsDict = [NSMutableDictionary dictionaryWithObject:summary forKey:devCertSummaryKey];
+									
+									CFErrorRef error;
+									CFDictionaryRef valuesDict = SecCertificateCopyValues(certificateRef, (__bridge CFArrayRef)@[(__bridge id)kSecOIDInvalidityDate], &error);
+									if (valuesDict) {
+										CFDictionaryRef invalidityDateDictionaryRef = CFDictionaryGetValue(valuesDict, kSecOIDInvalidityDate);
+										if (invalidityDateDictionaryRef) {
+											CFTypeRef invalidityRef = CFDictionaryGetValue(invalidityDateDictionaryRef, kSecPropertyKeyValue);
+											CFRetain(invalidityRef);
+											
+											// NOTE: the invalidity date type of kSecPropertyTypeDate is documented as a CFStringRef in the "Certificate, Key, and Trust Services Reference".
+											// In reality, it's a __NSTaggedDate (presumably a tagged pointer representing an NSDate.) But to sure, we'll check:
+											id invalidity = CFBridgingRelease(invalidityRef);
+											if (invalidity) {
+												if ([invalidity isKindOfClass:[NSDate class]]) {
+													// use the date directly
+													[detailsDict setObject:invalidity forKey:devCertInvalidityDateKey];
+												}
+												else {
+													// parse the date from a string
+													NSString *string = [invalidity description];
+													NSDateFormatter *invalidityDateFormatter = [NSDateFormatter new];
+													[invalidityDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss Z"];
+													NSDate *invalidityDate = [invalidityDateFormatter dateFromString:string];
+													if (invalidityDate) {
+														[detailsDict setObject:invalidityDate forKey:devCertInvalidityDateKey];
+													}
+												}
+											}
+											else {
+												NSLog(@"No invalidity date in '%@' certificate, dictionary = %@", summary, invalidityDateDictionaryRef);
+											}
+										}
+										else {
+											NSLog(@"No invalidity values in '%@' certificate, dictionary = %@", summary, valuesDict);
+										}
+										
+										CFRelease(valuesDict);
+									}
+									else {
+										NSLog(@"Could not get values in '%@' certificate, error = %@", summary, error);
+									}
+									
+									[certificateDetails addObject:detailsDict];
+								}
+								else {
+									NSLog(@"Could not get summary from certificate");
+								}
+								
 								CFRelease(certificateRef);
 							}
 						}
-
+						
 						NSMutableString *certificates = [NSMutableString string];
 						[certificates appendString:@"<table>\n"];
 						BOOL evenRow = NO;
-						for (NSString *summary in summaries) {
-							[certificates appendFormat:@"<tr class='%s'><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), summary];
+						NSArray *sortedCertificateDetails = [certificateDetails sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+							return [((NSDictionary *)obj1)[devCertSummaryKey] compare:((NSDictionary *)obj2)[devCertSummaryKey]];
+						}];
+						
+						for (NSDictionary *detailsDict in sortedCertificateDetails) {
+							NSString *summary = detailsDict[devCertSummaryKey];
+							NSDate *invalidityDate = detailsDict[devCertInvalidityDateKey];
+							NSString *expiration = expirationStringForDateInCalendar(invalidityDate, calendar);
+							if (! expiration) {
+								expiration = @"<span class='warning'>No invalidity date in certificate</span>";
+							}
+							[certificates appendFormat:@"<tr class='%s'><td>%@</td><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), summary, expiration];
 							evenRow = !evenRow;
 						}
 						[certificates appendString:@"</table>\n"];
@@ -269,12 +342,12 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					else {
 						[synthesizedInfo setObject:@"No Developer Certificates" forKey:@"DeveloperCertificatesFormatted"];
 					}
-
+					
 					value = [propertyList objectForKey:@"ProvisionedDevices"];
 					if ([value isKindOfClass:[NSArray class]]) {
 						NSArray *array = (NSArray *)value;
 						NSArray *sortedArray = [array sortedArrayUsingSelector:@selector(compare:)];
-
+						
 						NSString *currentPrefix = nil;
 						NSMutableString *devices = [NSMutableString string];
 						[devices appendString:@"<table>\n"];
@@ -298,24 +371,24 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 								id matchingDevice = [matchingDevices firstObject];
 								if ([matchingDevice isKindOfClass:[NSDictionary class]]) {
 									/* the matchingDevice dictionary looks like this:
-										{
-											buildVersion = 9A334;
-											deviceArchitecture = armv7;
-											deviceBluetoothMAC = "34:15:9e:82:XX:XX";
-											deviceCapacity = 30448345088;
-											deviceClass = iPod;
-											deviceColorString = iPodShinyMetal;
-											deviceDevelopmentStatus = Development;
-											deviceIdentifier = 2eaefee8081ca97fadf0be5f2822b458XXXXXXXX;
-											deviceName = Lustro;
-											deviceSerialNumber = 1B0101XXXXXX;
-											deviceSoftwareVersion = "5.0 (9A334)";
-											deviceType = "iPod3,1";
-											deviceWiFiMAC = "34:15:9e:83:XX:XX";
-											platformIdentifier = "com.apple.platform.iphoneos";
-											productVersion = "5.0";
-										},
-									*/
+									 {
+									 buildVersion = 9A334;
+									 deviceArchitecture = armv7;
+									 deviceBluetoothMAC = "34:15:9e:82:XX:XX";
+									 deviceCapacity = 30448345088;
+									 deviceClass = iPod;
+									 deviceColorString = iPodShinyMetal;
+									 deviceDevelopmentStatus = Development;
+									 deviceIdentifier = 2eaefee8081ca97fadf0be5f2822b458XXXXXXXX;
+									 deviceName = Lustro;
+									 deviceSerialNumber = 1B0101XXXXXX;
+									 deviceSoftwareVersion = "5.0 (9A334)";
+									 deviceType = "iPod3,1";
+									 deviceWiFiMAC = "34:15:9e:83:XX:XX";
+									 platformIdentifier = "com.apple.platform.iphoneos";
+									 productVersion = "5.0";
+									 },
+									 */
 									NSDictionary *matchingDeviceDictionary = (NSDictionary *)matchingDevice;
 									deviceName = [matchingDeviceDictionary objectForKey:@"deviceName"];
 									deviceSoftwareVerson = [matchingDeviceDictionary objectForKey:@"deviceSoftwareVersion"];
@@ -340,16 +413,16 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						[synthesizedInfo setObject:@"No Devices" forKey:@"ProvisionedDevicesFormatted"];
 						[synthesizedInfo setObject:@"Distribution Profile" forKey:@"ProvisionedDevicesCount"];
 					}
-
+					
 					{
 						NSString *profileString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 						profileString = [profileString stringByReplacingOccurrencesOfString:@"&" withString:@"&amp;"];
 						NSDictionary *htmlEntityReplacement = @{
-									@"\"": @"&quot;",
-									@"'": @"&apos;",
-									@"<": @"&lt;",
-									@">": @"&gt;",
-									};
+																@"\"": @"&quot;",
+																@"'": @"&apos;",
+																@"<": @"&lt;",
+																@">": @"&gt;",
+																};
 						for (NSString *key in [htmlEntityReplacement allKeys]) {
 							NSString *replacement = [htmlEntityReplacement objectForKey:key];
 							profileString = [profileString stringByReplacingOccurrencesOfString:key withString:replacement];
@@ -357,12 +430,12 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						synthesizedValue = [NSString stringWithFormat:@"<pre>%@</pre>", profileString];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"RawData"];
 					}
-
+					
 					{
 						synthesizedValue = [[NSBundle bundleWithIdentifier:@"com.iconfactory.Provisioning"] objectForInfoDictionaryKey:@"CFBundleVersion"];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"BundleVersion"];
 					}
-
+					
 					// older provisioning files don't include some key/value pairs
 					value = [propertyList objectForKey:@"TeamName"];
 					if (! value) {
@@ -425,10 +498,10 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
                             }
                         }
                     }
-
+					
 					{
 						[synthesizedInfo setObject:[URL lastPathComponent] forKey:@"FileName"];
-
+						
 						if ([[URL pathExtension] isEqualToString:@"app"]) {
 							// get the "file" information using the application package folder
 							NSString *folderPath = [URL path];
@@ -436,18 +509,18 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 							NSDictionary *folderAttributes = [fileManager attributesOfItemAtPath:folderPath error:NULL];
 							if (folderAttributes) {
 								NSDate *folderModificationDate = [folderAttributes fileModificationDate];
-							
+								
 								unsigned long long folderSize = 0;
 								NSArray *filesArray = [fileManager subpathsOfDirectoryAtPath:folderPath error:nil];
 								for (NSString *fileName in filesArray) {
 									NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:[folderPath stringByAppendingPathComponent:fileName] error:NULL];
 									if (fileAttributes)
-									folderSize += [fileAttributes fileSize];
+										folderSize += [fileAttributes fileSize];
 								}
-
+								
 								synthesizedValue = [NSString stringWithFormat:@"%@, Modified %@",
-										[NSByteCountFormatter stringFromByteCount:folderSize countStyle:NSByteCountFormatterCountStyleFile],
-										[dateFormatter stringFromDate:folderModificationDate]];
+													[NSByteCountFormatter stringFromByteCount:folderSize countStyle:NSByteCountFormatterCountStyleFile],
+													[dateFormatter stringFromDate:folderModificationDate]];
 								[synthesizedInfo setObject:synthesizedValue forKey:@"FileInfo"];
 							}
 							else {
@@ -467,13 +540,13 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 							}
 						}
 					}
-
+					
 #ifdef DEBUG
 					[synthesizedInfo setObject:@"debug" forKey:@"DEBUG"];
 #else
 					[synthesizedInfo setObject:@"" forKey:@"DEBUG"];
 #endif
-
+					
 					for (NSString *key in [synthesizedInfo allKeys]) {
 						NSString *replacementValue = [synthesizedInfo objectForKey:key];
 						NSString *replacementToken = [NSString stringWithFormat:@"__%@__", key];
@@ -481,8 +554,8 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					}
 					
 					NSDictionary *properties = @{ // properties for the HTML data
-						(__bridge NSString *)kQLPreviewPropertyTextEncodingNameKey : @"UTF-8",
-						(__bridge NSString *)kQLPreviewPropertyMIMETypeKey : @"text/html" };
+												 (__bridge NSString *)kQLPreviewPropertyTextEncodingNameKey : @"UTF-8",
+												 (__bridge NSString *)kQLPreviewPropertyMIMETypeKey : @"text/html" };
 					
 					QLPreviewRequestSetDataRepresentation(preview, (__bridge CFDataRef)[html dataUsingEncoding:NSUTF8StringEncoding], kUTTypeHTML, (__bridge CFDictionaryRef)properties);
 				}

@@ -368,7 +368,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 							NSPredicate *predicate = [NSPredicate predicateWithFormat:@"deviceIdentifier = %@", device];
 							NSArray *matchingDevices = [savedDevices filteredArrayUsingPredicate:predicate];
 							if ([matchingDevices count] > 0) {
-								id matchingDevice = [matchingDevices firstObject];
+								id matchingDevice = [matchingDevices objectAtIndex:0];
 								if ([matchingDevice isKindOfClass:[NSDictionary class]]) {
 									/* the matchingDevice dictionary looks like this:
 									 {

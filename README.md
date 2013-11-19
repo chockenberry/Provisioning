@@ -10,7 +10,10 @@ If you want to copy information from the Quick Look preview, you need to [change
 	$ defaults write com.apple.finder QLEnableTextSelection -bool TRUE
 	$ killall Finder
 
-Thanks to [Pieter Claerhout](https://github.com/pieterclaerhout) for the OS X and profile type support.
+Thanks to following individuals who've helped with this project:
+
+* [Pieter Claerhout](https://github.com/pieterclaerhout) for the OS X and profile type support.
+* [Kyle Sluder](https://github.com/kylesluder) for expiration (invalidity dates) in the developer certificates.
 
 
 Project Notes

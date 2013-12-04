@@ -7,7 +7,7 @@
 #import <Security/Security.h>
 
 
-// all code in Mavericks should be signed, but it's really broken...  http://www.openradar.me/15444624
+// all code in Mavericks should be signed, but if we do that we lose the ability to lookup devices in Xcodes preferences
 #define SIGNED_CODE 0
 
 
@@ -101,33 +101,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			fileData = [NSData dataWithContentsOfURL:[URL URLByAppendingPathComponent:@"embedded.mobileprovision"]];
 		}
 		else if ([[URL pathExtension] isEqualToString:@"ipa"]) {
-#if 0
-			// NOTE: This technique won't work with signed code since it relies on the ability to write to the filesystem, which per Radar #15444624, won't work.
-			
-			// $ unzip /path/to/Application.ipa 'Payload/*.app/embedded.mobileprovision' -d /path/to/unzipFolder
-			
-			NSString *unzipFolder = @"/tmp/com.iconfactory.Provisioning";
-			//NSString *unzipFolder = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"com.iconfactory.Provisioning"];
-			
-			NSTask *unzipTask = [NSTask new];
-			[unzipTask setLaunchPath:@"/usr/bin/unzip"];
-			[unzipTask setArguments:@[ @"-o", [URL path], @"Payload/*.app/embedded.mobileprovision", @"-d", unzipFolder ]];
-			[unzipTask launch];
-			[unzipTask waitUntilExit];
-			
-			// get the embedded provisioning from the iOS app archive
-			NSString *payloadFolder = [unzipFolder stringByAppendingPathComponent:@"Payload"];
-			NSArray *files = [fileManager contentsOfDirectoryAtPath:payloadFolder error:NULL];
-			if (files && [files count] > 0) {
-				NSString *filePath = [[payloadFolder stringByAppendingPathComponent:[files firstObject]] stringByAppendingPathComponent:@"embedded.mobileprovision"];
-				fileData = [NSData dataWithContentsOfFile:filePath];
-			}
-			
-			[fileManager removeItemAtPath:unzipFolder error:NULL];
-#else
-			// NOTE: This technique works with signed code since it only relies on the ability to read the filesystem and write to standard output.
-			
-			// $ unzip -p /path/to/Application.ipa 'Payload/*.app/embedded.mobileprovision' (piped to standard output)
+			// get the embedded provisioning from an app arcive using: unzip -p /path/to/Application.ipa 'Payload/*.app/embedded.mobileprovision' (piped to standard output)
 			NSTask *unzipTask = [NSTask new];
 			[unzipTask setLaunchPath:@"/usr/bin/unzip"];
 			[unzipTask setStandardOutput:[NSPipe pipe]];
@@ -136,7 +110,6 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 			[unzipTask waitUntilExit];
 			
 			fileData = [[[unzipTask standardOutput] fileHandleForReading] readDataToEndOfFile];
-#endif
 		}
 		else {
 			// get the provisioning directly from the file
@@ -158,24 +131,10 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 				if (! QLPreviewRequestIsCancelled(preview)) {
 					
 #if !SIGNED_CODE
-#if 1
 					// get the iOS devices that Xcode has seen, which only works if the plug-in is not running in a sandbox
 					NSUserDefaults *xcodeDefaults = [NSUserDefaults new];
 					[xcodeDefaults addSuiteNamed:@"com.apple.dt.XCode"];
 					NSArray *savedDevices = [xcodeDefaults objectForKey:@"DVTSavediPhoneDevices"];
-#else
-					// the sandbox also thwarts attempts to read the data from the shell command
-					// $ defaults read com.apple.dt.XCode DVTSavediPhoneDevices
-					NSTask *task = [NSTask new];
-					[task setLaunchPath:@"/usr/bin/defaults"];
-					[task setArguments:@[ @"read", @"com.apple.dt.XCode", @"DVTSavediPhoneDevices" ]];
-					[task setStandardOutput:[NSPipe pipe]];
-					[task launch];
-					
-					NSData *pipeData = [[[task standardOutput] fileHandleForReading] readDataToEndOfFile];
-					NSString *pipeString = [[NSString alloc] initWithData:pipeData encoding:NSUTF8StringEncoding];
-					NSLog(@"pipeString = %@", pipeString);
-#endif
 #endif
 					
 					NSURL *htmlURL = [[NSBundle bundleWithIdentifier:@"com.iconfactory.Provisioning"] URLForResource:@"template" withExtension:@"html"];

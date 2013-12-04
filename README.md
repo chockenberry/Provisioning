@@ -19,7 +19,7 @@ Thanks to following individuals who've helped with this project:
 Project Notes
 -------------
 
-* The plug-in code can be signed, but currently isn't because of http://www.openradar.me/15444624. If you want to sign the code, set the "Code Signing Identity" build setting  to the "Developer ID: *" automatic setting. If you don't have a Developer ID, get creative.
+* The plug-in code can be signed, but currently isn't because it prevents the app from reading user defaults from Xcode (and showing device names and software versions.) If you want to sign the code, set the "Code Signing Identity" build setting  to the "Developer ID: *" automatic setting. If you don't have a Developer ID, get creative. You'll also need to change the SIGNED_CODE definition from 0 to 1.
 
 * There is a "Provisioning (Install)" aggregate target that puts the build of Provisioning.qlgenerator in your ~/Library/QuickLook folder.
 

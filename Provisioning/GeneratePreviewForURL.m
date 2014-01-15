@@ -153,8 +153,8 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					id value = nil;
 					NSString *synthesizedValue = nil;
 					NSDateFormatter *dateFormatter = [NSDateFormatter new];
-					[dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-					[dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+					[dateFormatter setDateStyle:NSDateFormatterFullStyle];
+					[dateFormatter setTimeStyle:NSDateFormatterShortStyle];
 					NSCalendar *calendar = [NSCalendar currentCalendar];
 					
 					value = [propertyList objectForKey:@"CreationDate"];

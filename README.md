@@ -10,6 +10,8 @@ If you want to copy information from the Quick Look preview, you need to [change
 	$ defaults write com.apple.finder QLEnableTextSelection -bool TRUE
 	$ killall Finder
 
+If you're like the rest of us, provisioning can sometimes make your head spin. When that happens, I recommend reading Sean Heber's [provisioning overview](http://bigzaphod.tumblr.com/post/78574849549/provisioning).
+
 Thanks to following individuals who've helped with this project:
 
 * [Pieter Claerhout](https://github.com/pieterclaerhout) for the OS X and profile type support.

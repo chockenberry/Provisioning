@@ -96,7 +96,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
         NSURL *URL = (__bridge NSURL *)url;
 		
 		NSData *fileData = nil;
-		if ([[URL pathExtension] isEqualToString:@"app"]) {
+		if ([[URL pathExtension] isEqualToString:@"app"] || [[URL pathExtension] isEqualToString:@"appex"]) {
 			// get the embedded provisioning for the iOS app
 			fileData = [NSData dataWithContentsOfURL:[URL URLByAppendingPathComponent:@"embedded.mobileprovision"]];
 		}

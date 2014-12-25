@@ -251,7 +251,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"Copying $BUILT_PRODUCTS_DIR/Provisioning.qlgenerator to QuickLook folder...\"\n\nGENERATOR=\"Provisioning.qlgenerator\"\n\nrm -rf ~/Library/QuickLook/$GENERATOR\nqlmanage -r\n\ncp -R \"$BUILT_PRODUCTS_DIR/$GENERATOR\" ~/Library/QuickLook/\nqlmanage -r\n";
+			shellScript = "echo \"Copying $BUILT_PRODUCTS_DIR/Provisioning.qlgenerator to QuickLook folder...\"\n\nGENERATOR=\"Provisioning.qlgenerator\"\nQUICKLOOK_ROOT=\"$HOME/Library/QuickLook\"\n\nmkdir -p \"$QUICKLOOK_ROOT\"\nrm -rf \"$QUICKLOOK_ROOT/$GENERATOR\"\nqlmanage -r\n\ncp -R \"$BUILT_PRODUCTS_DIR/$GENERATOR\" \"$QUICKLOOK_ROOT\"\nqlmanage -r\n";
 		};
 		44FB5C421831C6CA00AD6BC6 /* Package Release */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -469,6 +469,7 @@
 				44FB5C3E1831C6B500AD6BC6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -385,7 +385,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Provisioning/Provisioning-Prefix.pch";
 				INFOPLIST_FILE = "Provisioning/Provisioning-Info.plist";
-				INSTALL_PATH = /Library/QuickLook;
+				INSTALL_PATH = /Library/QuickLook/;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = qlgenerator;
 			};
@@ -398,7 +398,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Provisioning/Provisioning-Prefix.pch";
 				INFOPLIST_FILE = "Provisioning/Provisioning-Info.plist";
-				INSTALL_PATH = /Library/QuickLook;
+				INSTALL_PATH = /Library/QuickLook/;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = qlgenerator;
 			};

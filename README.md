@@ -23,7 +23,7 @@ defaults write com.apple.finder QLEnableTextSelection -bool TRUE
 killall Finder
 ```
 
-## Provisionning overview
+## Provisioning overview
 
 If you're like the rest of us, provisioning can sometimes make your head spin. When that happens, I recommend reading Sean Heber's [provisioning overview](http://bigzaphod.tumblr.com/post/78574849549/provisioning).
 

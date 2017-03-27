@@ -48,3 +48,6 @@ Thanks to following individuals who've helped with this project:
 
 * You can use the command-line to debug, as well. To dump of the output in a `.qlpreview` bundle, use: `qlmanage -p ~/Library/MobileDevice/Provisioning\ Profiles/Iconfactory_Development.mobileprovision -o /tmp/quicklook`. You'll need to make the directory first.
 
+## LICENSE
+
+MIT © [Craig Hockenberry](https://github.com/chockenberry)
